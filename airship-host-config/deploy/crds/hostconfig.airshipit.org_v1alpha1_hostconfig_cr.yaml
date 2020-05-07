@@ -1,0 +1,7 @@
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example-hostconfig
+spec:
+  # Add fields here
+  size: 3
