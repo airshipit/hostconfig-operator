@@ -4,4 +4,4 @@ metadata:
   name: example-hostconfig
 spec:
   # Add fields here
-  size: 3
+  message: "Its a big world"
