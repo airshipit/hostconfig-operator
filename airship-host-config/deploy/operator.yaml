@@ -22,6 +22,9 @@ spec:
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
+          # add inventory in here, and its used.
+          - mountPath: /opt/ansible/inventory
+            name: inventory
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
@@ -35,6 +38,10 @@ spec:
               value: "airship-host-config"
             - name: ANSIBLE_GATHERING
               value: explicit
+            - name: ANSIBLE_INVENTORY
+              value: /opt/ansible/inventory
       volumes:
         - name: runner
+          emptyDir: {}
+        - name: inventory
           emptyDir: {}

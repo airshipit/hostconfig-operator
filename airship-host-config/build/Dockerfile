@@ -7,3 +7,4 @@ RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
 COPY watches.yaml ${HOME}/watches.yaml
 
 COPY roles/ ${HOME}/roles/
+COPY inventory/ ${HOME}/inventory/
