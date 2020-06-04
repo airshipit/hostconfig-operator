@@ -3,3 +3,4 @@
   group: hostconfig.airshipit.org
   kind: HostConfig
   role: hostconfig
+  #  playbook: /opt/ansible/playbook.yaml

@@ -1,0 +1,9 @@
+---
+#playbook.yaml
+
+- name: DISPLAY THE INVENTORY VARS
+  hosts: 'all' # These are dynamically generated groups from the plugin
+  serial: "{{ playbook_execution_statergy | default(1) }}"
+  gather_facts: no
+  roles:
+  - hostconfig

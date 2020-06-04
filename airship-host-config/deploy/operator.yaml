@@ -17,14 +17,14 @@ spec:
       containers:
         - name: airship-host-config
           # Replace this with the built image name
-          image: "docker.io/port/airship-host-config:latest"
-          imagePullPolicy: "Always"
+          image: "airship-host-config:v1"
+          imagePullPolicy: "IfNotPresent"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
           # add inventory in here, and its used.
-          - mountPath: /opt/ansible/inventory
-            name: inventory
+          #- mountPath: /opt/ansible/inventory
+          #  name: inventory
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
@@ -43,5 +43,5 @@ spec:
       volumes:
         - name: runner
           emptyDir: {}
-        - name: inventory
-          emptyDir: {}
+        #- name: inventory
+        #  emptyDir: {}

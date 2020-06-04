@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -39,7 +39,8 @@ class KubeInventory(object):
         #api_instance = kubernetes.client.CoreV1Api(kubernetes.config.load_kube_config())
 
         #TODO: read from env var
-        label_selector = "kubernetes.io/hostname=kind-control-plane"
+        #label_selector = "kubernetes.io/hostname=kind-control-plane"
+        label_selector = "node-role.kubernetes.io/master="
 
         try:
             nodes = api_instance.list_node(label_selector=label_selector).to_dict()[
@@ -61,6 +62,9 @@ class KubeInventory(object):
             self.inventory["_meta"]["hostvars"][node_internalip][
                 "kube_node_name"
             ] = node["metadata"]["name"]
+            self.inventory["_meta"]["hostvars"][node_internalip]["architecture"] = node['status']['node_info']['architecture']
+            self.inventory["_meta"]["hostvars"][node_internalip]["kernel_version"] = node['status']['node_info']['kernel_version']
+
 
         return self.inventory
 

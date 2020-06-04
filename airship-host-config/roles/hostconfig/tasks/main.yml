@@ -7,3 +7,11 @@
 - name: Message
   debug:
     msg: "Message: {{ message }}"
+
+- name: DISPLAY THE HOST VARS
+  debug:
+    msg: "The host variable is {{ hostvars }}."
+   
+- name: DISPLAY HOST DETAILS
+  debug:
+    msg: "And the kubernetes node name is {{ kube_node_name }}, architecture is {{ architecture }} and kernel version is {{ kernel_version }}"
