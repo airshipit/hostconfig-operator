@@ -10,14 +10,17 @@ import yaml
 
 import json
 
+interested_labels_annotations = ["beta.kubernetes.io/arch", "beta.kubernetes.io/os", "kubernetes.io/arch", "kubernetes.io/hostname", "kubernetes.io/os", "kubernetes.io/role", "topology.kubernetes.io/region", "topology.kubernetes.io/zone", "projectcalico.org/IPv4Address", "projectcalico.org/IPv4IPIPTunnelAddr", "Kernel Version", "OS Image", "Operating System", "Container Runtime Version", "Kubelet Version", "Operating System"]
 
 class KubeInventory(object):
     def __init__(self):
         self.inventory = {}
         self.read_cli_args()
 
+        self.api_instance = kubernetes.client.CoreV1Api(kubernetes.config.load_incluster_config())
         if self.args.list:
-            self.inventory = self.kube_inventory()
+#            self.inventory = self.kube_inventory()
+            self.kube_inventory()
         elif self.args.host:
             # Not implemented, since we return _meta info `--list`.
             self.inventory = self.empty_inventory()
@@ -30,22 +33,28 @@ class KubeInventory(object):
     # Kube driven inventory
     def kube_inventory(self):
         self.inventory = {"group": {"hosts": [], "vars": {}}, "_meta": {"hostvars": {}}}
-        self.inventory["group"]["vars"]["ansible_ssh_user"] = "deployer"
+        self.inventory["group"]["vars"]["ansible_ssh_user"] = "sirisha"
         self.inventory["group"]["vars"][
             "ansible_ssh_private_key_file"
-        ] = "~/.ssh/id_rsa.pem"
+        ] = "~/.ssh/id_rsa"
 
-        api_instance = kubernetes.client.CoreV1Api(kubernetes.config.load_incluster_config())
         #api_instance = kubernetes.client.CoreV1Api(kubernetes.config.load_kube_config())
 
         #TODO: read from env var
         #label_selector = "kubernetes.io/hostname=kind-control-plane"
-        label_selector = "node-role.kubernetes.io/master="
+        self.get_nodes()
+        return
+
+    def get_nodes(self):
+        #label_selector = "kubernetes.io/role="+role
 
         try:
-            nodes = api_instance.list_node(label_selector=label_selector).to_dict()[
+            nodes = self.api_instance.list_node().to_dict()[
                 "items"
             ]
+            #nodes = self.api_instance.list_node(label_selector=label_selector).to_dict()[
+            #   "items"
+            #]
         except ApiException as e:
             print("Exception when calling CoreV1Api->list_node: %s\n" % e)
 
@@ -58,17 +67,30 @@ class KubeInventory(object):
             else:
                 node_internalip = None
             self.inventory["group"]["hosts"].append(node_internalip)
+
             self.inventory["_meta"]["hostvars"][node_internalip] = {}
+            for key, value in node["metadata"]["annotations"].items():
+                self.inventory["_meta"]["hostvars"][node_internalip][key] = value
+            for key, value in node["metadata"]["labels"].items():
+                self.inventory["_meta"]["hostvars"][node_internalip][key] = value
+                if key in interested_labels_annotations:
+                    if value not in self.inventory.keys():
+                        self.inventory[value] = {"hosts": [], "vars": {}}
+                    if node_internalip not in self.inventory[value]["hosts"]:
+                        self.inventory[value]["hosts"].append(node_internalip)
+            for key, value in node['status']['node_info'].items():
+                self.inventory["_meta"]["hostvars"][node_internalip][key] = value
+                if key in interested_labels_annotations:
+                    if value not in self.inventory.keys():
+                        self.inventory[value] = {"hosts": [], "vars": {}}
+                    if node_internalip not in self.inventory[value]["hosts"]:
+                        self.inventory[value]["hosts"].append(node_internalip)
             self.inventory["_meta"]["hostvars"][node_internalip][
                 "kube_node_name"
             ] = node["metadata"]["name"]
-            self.inventory["_meta"]["hostvars"][node_internalip]["architecture"] = node['status']['node_info']['architecture']
-            self.inventory["_meta"]["hostvars"][node_internalip]["kernel_version"] = node['status']['node_info']['kernel_version']
+        return
+#        return self.inventory
 
-
-        return self.inventory
-
-    # Empty inventory.
     def empty_inventory(self):
         return {"_meta": {"hostvars": {}}}
 
