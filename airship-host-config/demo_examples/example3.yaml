@@ -1,0 +1,12 @@
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example3
+spec:
+  # Add fields here
+  message: "Its a big world"
+  execution_groups:
+    - "worker"
+    - "master"
+  execution_strategy: 2
+  execution_order: true

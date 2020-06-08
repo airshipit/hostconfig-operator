@@ -2,8 +2,33 @@
 #playbook.yaml
 
 - name: DISPLAY THE INVENTORY VARS
-  hosts: 'all' # These are dynamically generated groups from the plugin
-  serial: "{{ playbook_execution_statergy | default(1) }}"
+  hosts: localhost
   gather_facts: no
-  roles:
-  - hostconfig
+  tasks:
+    - name: Set Serial variable
+      block:
+        - set_fact:
+            serial_var: "{{ execution_groups|serial(groups) }}"
+        - set_fact:
+            serial_var: "{{ execution_strategy|serial_strategy(execution_groups, groups) }}"
+          when: execution_strategy is defined
+        - debug:
+            msg: "Serial Variable {{ serial_var }}"
+      when: execution_order is true and execution_groups is defined
+
+- name: Execute Roles based on hosts
+  hosts: "{{ execution_groups | default('all')}}"
+  serial: "{{ hostvars['localhost']['serial_var'] | default('100%') }}"
+  gather_facts: no
+  tasks:
+    - import_role:
+       name: hostconfig
+      when: execution_order is true
+
+- name: Execute Roles based on hosts
+  hosts: "{{ execution_groups | default('all')}}"
+  gather_facts: no
+  tasks:
+    - import_role:
+       name: hostconfig
+      when: execution_order is undefined or execution_order is false
