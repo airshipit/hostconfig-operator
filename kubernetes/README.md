@@ -8,6 +8,18 @@ A vagrant script for setting up a Kubernetes cluster using Kubeadm
 
 ## How to Run
 
+Git clone the repo on the host machine which has vagrant and virtual box installed
+
+```
+git clone https://github.com/SirishaGopigiri/airship-host-config.git
+```
+
+Navigate to the kubernetes folder
+
+```
+cd airship-host-config/kubernetes/
+```
+
 Execute the following vagrant command to start a new Kubernetes cluster, this will start one master and two nodes:
 
 ```

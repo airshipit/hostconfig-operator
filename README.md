@@ -4,7 +4,7 @@ This repo contains the code for Airship HostConfig Application using Ansible Ope
 ## How to Run
 
 ## Approach 1
-If Kubernetes setup is not available please refer to README.md in k8s folder to bring up the kubernetes setup. It uses Vagrant and Virtual Box to bring up 1 master and 2 worker node VMs
+If Kubernetes setup is not available please refer to README.md in kubernetes folder to bring up the kubernetes setup. It uses Vagrant and Virtual Box to bring up 1 master and 2 worker node VMs
 
 After the VMs are up and running, connect to master node
 
