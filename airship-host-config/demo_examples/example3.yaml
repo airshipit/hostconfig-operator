@@ -5,8 +5,7 @@ metadata:
 spec:
   # Add fields here
   message: "Its a big world"
-  execution_groups:
-    - "worker"
-    - "master"
-  execution_strategy: 2
+  host_groups:
+    - "us-east"
+    - "us-west"
   execution_order: true

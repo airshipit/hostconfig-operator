@@ -1,32 +1,60 @@
 ---
 #playbook.yaml
 
+# Ansible play to initialize custom variables
+# The below block of sequence executes only when the execution order is set to true
+# Which tells the ansible to execute the host_groups in sequential
 - name: DISPLAY THE INVENTORY VARS
   hosts: localhost
   gather_facts: no
   tasks:
     - name: Set Serial variable
       block:
+        ## Calculates the serial variable based on the host_groups defined in the Kubernetes Hostconfig CR object
+        ## Uses the custom host_config_serial plugin and returns a list of integers
+        ## These integer values corresponds to the number of hosts in each host group given un Kubernetes Hostconfig CR object
+        ## If we have 3 master and 5 worker nodes setup. And in the Kubernetes Hostconfig CR object we pass the
+        ## host_groups as master and worker, then using the host_config_serial plugin the variable returned 
+        ## would be list of 3, 5 i.e [3, 5] so that all the 3 master execute in first iteration and
+        ## next the 5 workers execute in second iteration
+        ## This takes the groups parameters set by the dynamic_inventory.py as argument
         - set_fact:
-            serial_var: "{{ execution_groups|serial(groups) }}"
+            host_config_serial_variable: "{{ host_groups|host_config_serial(groups) }}"
+        ## This custom filter plugin is used to futher break the host_config_serial variable into equal length
+        ## as specified in the Kubernetes Hostconfig CR object
+        ## If we have 3 master and 5 worker nodes setup. And in the Kubernetes Hostconfig CR object we pass the
+        ## host_groups as master and worker, also the serial_strategy is set to 2. Then this custom filter returns
+        ## the following list of integers where the [3, 5] list is further split based on the
+        ## serial_strategy given here it is 2
+        ## host_config_serial_variable is [2, 1, 2, 2, 1]
+        ## This task is executed only when the execution_strategy is defined in the hostconfig CR object
+        ## When executed it overrides the previous task value for host_config_serial_variable variable
+        ## This takes host_groups and groups as parameters
         - set_fact:
-            serial_var: "{{ execution_strategy|serial_strategy(execution_groups, groups) }}"
+            host_config_serial_variable: "{{ execution_strategy|host_config_serial_strategy(host_groups, groups) }}"
           when: execution_strategy is defined
         - debug:
-            msg: "Serial Variable {{ serial_var }}"
-      when: execution_order is true and execution_groups is defined
+            msg: "Serial Variable {{ host_config_serial_variable }}"
+      when: execution_order is true and host_groups is defined
 
+# The tasks below gets executed when execution_order is set to true and order of execution should be
+# considered while executing
+# The below tasks considers the host_config_serial_variable variable value set from the previous block
+# Executes the number of hosts set in the host_config_serial_variable at every iteration
 - name: Execute Roles based on hosts
-  hosts: "{{ execution_groups | default('all')}}"
-  serial: "{{ hostvars['localhost']['serial_var'] | default('100%') }}"
+  hosts: "{{ host_groups | default('all')}}"
+  serial: "{{ hostvars['localhost']['host_config_serial_variable'] | default('100%') }}"
   gather_facts: no
   tasks:
     - import_role:
        name: hostconfig
       when: execution_order is true
 
+# Executed when the execution_order is set to false or not set
+# This is the default execution flow where ansible gets all the host available in host_groups
+# and executes them in parallel
 - name: Execute Roles based on hosts
-  hosts: "{{ execution_groups | default('all')}}"
+  hosts: "{{ host_groups | default('all')}}"
   gather_facts: no
   tasks:
     - import_role:

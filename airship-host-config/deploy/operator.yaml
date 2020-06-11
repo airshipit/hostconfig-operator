@@ -17,17 +17,13 @@ spec:
       containers:
         - name: airship-host-config
           # Replace this with the built image name
-          #image: "host-config:v1"
-          image: "airship-host-config:v2"
-          imagePullPolicy: "IfNotPresent"
+          image: "AIRSHIP_HOSTCONFIG_IMAGE"
+          imagePullPolicy: "PULL_POLICY"
           securityContext:
             privileged: true
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
-          # add inventory in here, and its used.
-          #- mountPath: /opt/ansible/inventory
-          #  name: inventory
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
@@ -44,13 +40,9 @@ spec:
             - name: ANSIBLE_INVENTORY
               value: /opt/ansible/inventory
             - name: USER
-              value: "sirisha"
+              value: "USERNAME"
             - name: PASS
-              value: "testing"
+              value: "PASSWORD"
       volumes:
         - name: runner
           emptyDir: {}
-        #- name: inventory
-        #  hostPath:
-        #    type: Directory
-        #    path: /home/sirisha/airship-host-config/airship-host-config/inventory

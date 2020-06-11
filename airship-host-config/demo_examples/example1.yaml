@@ -5,7 +5,7 @@ metadata:
 spec:
   # Add fields here
   message: "Its a big world"
-  execution_groups:
-    - "k8-worker-1"
-    - "k8-worker-2"
-  execution_order: true
+  host_groups:
+    - "master"
+    - "worker"
+  execution_order: false

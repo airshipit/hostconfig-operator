@@ -8,16 +8,12 @@
   debug:
     msg: "Message: {{ message }}"
 
-#- name: DISPLAY THE HOST VARS
-#  debug:
-#    msg: "The host variable is {{ hostvars }}."
-   
 - name: DISPLAY HOST DETAILS
   debug:
     msg: "And the kubernetes node name is {{ kube_node_name }}, architecture is {{ architecture }} and kernel version is {{ kernel_version }}"
 
 - name: CREATING A FILE
-  shell: "hostname > /home/sirisha/testing; date >> /home/sirisha/testing;cat /home/sirisha/testing;sleep 5"
+  shell: "hostname > ~/testing; date >> ~/testing;cat ~/testing;sleep 5"
   register: output
 
 - debug: msg={{ output.stdout }}
