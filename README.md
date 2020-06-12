@@ -24,13 +24,13 @@ Execute the create_labels.sh file so that the Kubernetes nodes are labelled acco
 ./create_labels.sh
 ```
 
-Execute the setup.sh script to build and copy the Airship Hostconfig Ansible Operator Image to worker nodes. It also deploys the application on the Kubernetes setup as deployment kind. The below script uses "vagrant" as username and password and executes the ansible host config role using on the Kubernetes Nodes using these credentials when we are create the HostConfig Kubernetes CR objects.
+Execute the setup.sh script to build and copy the Airship Hostconfig Ansible Operator Image to worker nodes. It also deploys the application on the Kubernetes setup as deployment kind. The below script configures Airship HostConfig Ansible Operator to use "vagrant" as both username and password when it tries connecting to the Kubernetes Nodes. So when we create a HostConfig Kubernetes CR object the application tries to execute the hostconfig ansible role on the Kubernetes Nodes specified in the CR object by connecting using the "vagrant" username and password.
 
 ```
 ./setup.sh
 ```
 
-If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kuberntes nodes when executing the setup.sh. This uses the <username> and <password> passed to execute the hostconfig role on the kubernetes nodes when we are create the HostConfig Kubernetes CR objects.
+If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kuberntes nodes when executing the setup.sh script. So this configures the HostConfig Ansible Operator pod to use the "username" and "password" passed when executing the hostconfig role on the kubernetes nodes when we are create the HostConfig Kubernetes CR objects.
 
 ```
 ./setup.sh <username> <password>
@@ -58,13 +58,13 @@ Navigate to airship-host-config folder
 cd airship-host-config/airship-host-config/
 ```
 
-Execute the setup.sh script to build and copy the Airship Hostconfig Ansible Operator Image to worker nodes. It also deploys the application on the Kubernetes setup as deployment kind. The below script uses "vagrant" as username and password and executes the ansible host config role using on the Kubernetes Nodes using these credentials when we create the HostConfig Kubernetes CR objects.
+Execute the setup.sh script to build and copy the Airship Hostconfig Ansible Operator Image to worker nodes. It also deploys the application on the Kubernetes setup as deployment kind. The below script configures Airship HostConfig Ansible Operator to use "vagrant" as both username and password when it tries connecting to the Kubernetes Nodes. So when we create a HostConfig Kubernetes CR object the application tries to execute the hostconfig ansible role on the Kubernetes Nodes specified in the CR object by connecting using the "vagrant" username and password.
 
 ```
 ./setup.sh
 ```
 
-If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kuberntes nodes when executing the setup.sh. This uses the <username> and <password> passed to execute the hostconfig role on the kubernetes nodes when we create the HostConfig Kubernetes CR objects.
+If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kuberntes nodes when executing the setup.sh script. So this configures the HostConfig Ansible Operator pod to use the "username" and "password" passed when executing the hostconfig role on the kubernetes nodes when we are create the HostConfig Kubernetes CR objects.
 
 ```
 ./setup.sh <username> <password>
@@ -103,7 +103,3 @@ If the setup is configured using a different user, check using the below command
 ```
 cat /home/<username>/testing
 ```
-
-## Licensing
-
-[Apache License, Version 2.0](http://opensource.org/licenses/Apache-2.0).
