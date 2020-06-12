@@ -92,7 +92,7 @@ kubectl apply -f example2.yaml
 
 Apart from the logs on the pod when we execute the hostconfig role we are creating a "tetsing" file on the kubernetes nodes, please check the contents in that file which states the time of execution of the hostconfig role by the HostConfig Ansible Operator Pod.
 
-Execute below command on the kubernetes hosts to get the execution time.
+Execute below command on the kubernetes hosts to get the timestamp of execution.
 
 ```
 cat /home/vagrant/testing
