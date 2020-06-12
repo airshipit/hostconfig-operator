@@ -96,7 +96,7 @@ Execute below command on the kubernetes hosts to get the execution time.
 
 ```
 cat /home/vagrant/testing
-``
+```
 
 If the setup is configured using a different user, check using the below command
 
