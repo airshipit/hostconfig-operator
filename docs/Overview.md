@@ -63,9 +63,6 @@ Using operator pod to perform host configuration on kubernetes nodes
 2. **Operator pod connecting to Kubernetes Nodes:**
 
     The kubernetes nodes should be annotated with secret name having the username and private key as part of the contents.
-2. **Operator pod connecting to Kubernetes Nodes:**
-
-    The kubernetes nodes should be annotated with secret name having the username and private key as part of the contents.
 
 git clone the hostconfig repository
 
