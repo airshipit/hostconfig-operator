@@ -30,11 +30,7 @@ The host configuration on the kubernetes nodes is done by executing the appropri
 
 Hostconfig operator will be running as a kubernetes deployment on the target kubernetes cluster.
 
-**Hostconfig Operator Code**
-
-The code base for the ansible operator is available at: https://github.com/SirishaGopigiri/airship-host-config/tree/integration
-
-The repository also have vagrants scripts to build kubernetes cluster on the Vagrant VMs and then test the ansible-operator pod.
+This repository also have vagrants scripts to build kubernetes cluster on the Vagrant VMs and has to deploy and configure the hostconfig-operator pod on the K8 setup.
 
 ## Deployment and Host Configuration Flow
 
@@ -66,7 +62,7 @@ Using operator pod to perform host configuration on kubernetes nodes
 
 git clone the hostconfig repository
 
-`git clone -b integration https://github.com/SirishaGopigiri/airship-host-config.git`
+`git clone https://github.com/SirishaGopigiri/airship-host-config.git`
 
 Move to airship-host-config directory
 
