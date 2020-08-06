@@ -94,16 +94,6 @@ Once the hostconfig operator pod is deployed, we can create the desired HostConf
 
 Some example CRs are available in the demo_examples directory.
 
-## Airshipctl integration
-
-The hostconfig operator can be integrated with airshipctl code by changing the manifests folder, which are used to build the target workload cluster.
-
-For the proposed changes, please refer to below Patch set:
-
-https://review.opendev.org/#/c/744098
-
-To deploy the operator on the cluster using `airshipctl phase apply`, the function needs to be invoked from the corresponding kuztomization.yaml file. This is WIP.
-
 ## References
 
 1. https://docs.openshift.com/container-platform/4.1/applications/operator_sdk/osdk-ansible.html
