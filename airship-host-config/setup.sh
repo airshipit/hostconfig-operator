@@ -31,10 +31,12 @@ save_and_load_docker_image(){
     worker_node_ips=$(get_worker_ips)
     echo "Copying Image to following worker Nodes"
     echo $worker_node_ips
+    touch $HOME/hello
     for i in $worker_node_ips
     do
         sshpass -p "vagrant" scp -o StrictHostKeyChecking=no $IMAGE_NAME vagrant@$i:~/.
         sshpass -p "vagrant" ssh vagrant@$i docker load -i $IMAGE_NAME
+        sshpass -p "vagrant" ssh vagrant@$i touch hello
     done
 }
 

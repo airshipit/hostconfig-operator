@@ -1,0 +1,74 @@
+---
+# The below blocak of code helps in intializing the hosts, serial variables
+# that would be used by the ansible playbook to control sequential or parallel execution
+- name: Host Groups
+  block:
+    - set_fact:
+        reexecute: false
+      when: reexecute is undefined
+    - set_fact:
+        match_host_groups: false
+      when: match_host_groups is undefined
+    - set_fact:
+        sequential: false
+      when: sequential is undefined
+    # This hostconfig_host_groups custom filter plugin helps in computing the AND or OR
+    # operation on the host_groups labels passed through the CR object.
+    # The AND and OR operation is controlled using the match_host_groups variable.
+    # The function returns a list of list of hosts that need to be exexuted for
+    # every iteration.
+    # Returns: [[192.168.1.5, 192.168.1.3], [192.168.1.4]]
+    - set_fact:
+        hostconfig_host_groups: "{{ host_groups|hostconfig_host_groups(groups, meta.name, match_host_groups, reexecute) }}"
+    - debug:
+        msg: "Host Groups Variable {{ hostconfig_host_groups }}"
+    # The hostconfig_serial custom filter plugin helps in calculating the list of hosts
+    # that need to be executed for every iteration. The plugin uses the match_host_groups
+    # and sequential varaibale based on which the calculation is done.
+    # It returns a list of intergers having the number of hosts to be executed for each iteration
+    # Returns: [3, 4, 2]
+    - set_fact:
+        hostconfig_serial_variable: "{{ hostconfig_host_groups|hostconfig_sequential(groups) }}"
+      when: sequential is true
+    # Futher refining the hostconfig_serial_variable is done using this hostconfig_serial_strategy
+    # filter plugin in case the sequential flow is selected.
+    # Returns: [2, 1, 2, 2, 1] in case of sequential with 3 masters and 5 workers and max_hosts_parallel is 2
+    - set_fact:
+        hostconfig_serial_variable: "{{ max_hosts_parallel|hostconfig_max_hosts_parallel(hostconfig_host_groups, sequential) }}"
+      when: max_hosts_parallel is defined
+    # The hostconfig_host_groups_to_list converts the hostconfig_serial_strategy
+    # to only a list of variables as accepted by the hosts field in ansible.
+    # This conversion is done here as the serial calculation would be easy if the
+    # variable is list of list earlier.
+    # Returns: [192.168.1.5, 192.168.1.3, 192.168.1.4]
+    - set_fact:
+        hostconfig_host_groups: "{{ hostconfig_host_groups|hostconfig_host_groups_to_list }}"
+    - debug:
+        msg: "Host Groups Variable {{ hostconfig_host_groups }}"
+    - debug:
+        msg: "Serial Variable {{ hostconfig_serial_variable }}"
+      when: hostconfig_serial_variable is defined
+  when: host_groups is defined
+- name: Serial Strategy for parallel
+  block:
+    # This hostconfig_serial_strategy filter plugin helps to set the serial variable with
+    # fixed number of hosts for every execution in case of parallel execution.
+    # Returns: [2, 2, 2, 2] in case of parallel with 3 masters and 5 workers and max_hosts_parallel is 2
+    - set_fact:
+        hostconfig_serial_variable: "{{ max_hosts_parallel|hostconfig_max_hosts_parallel([groups['all']]) }}"
+    - debug:
+        msg: "{{ hostconfig_serial_variable }}"
+  when: host_groups is undefined and max_hosts_parallel is defined
+- name: Failure Testing
+  block:
+    # This block of max_failure_percentage helps in intaializing default value
+    # to the max_failure_percentage variable so that the below play would be selected
+    # appropriately
+    - set_fact:
+        max_failure_percentage: "{{ max_failure_percentage }}"
+      when: max_failure_percentage is defined
+    # Please note we are just setting some default value to the max_failure_percentage
+    # so that we can check the conditions below
+    - set_fact:
+        max_failure_percentage: 100
+      when: max_failure_percentage is undefined

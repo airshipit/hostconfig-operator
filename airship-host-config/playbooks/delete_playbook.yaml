@@ -1,0 +1,10 @@
+---
+- name: Delete LocalHosts
+  hosts: localhost
+  gather_facts: no
+  tasks:
+     - name: delete the files
+       file: 
+         path: "/opt/ansible/data/hostconfig/{{ meta.name }}"
+         state: absent
+       register: output

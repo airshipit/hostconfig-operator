@@ -1,6 +1,0 @@
-apiVersion: hostconfig.airshipit.org/v1alpha1
-kind: HostConfig
-metadata:
-  name: example
-spec:
-  message: "Its a big world"

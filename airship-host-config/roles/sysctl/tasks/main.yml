@@ -1,0 +1,15 @@
+---
+- name: sysctl configuration
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  with_items: "{{ config.sysctl }}"
+  become: yes
+  register: sysctl_output
+
+- name: sysctl output
+  debug: msg={{ sysctl_output }}
+  when: sysctl_output is defined

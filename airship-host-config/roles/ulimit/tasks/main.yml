@@ -1,0 +1,14 @@
+---
+- name: ulimit configuration
+  pam_limits:
+    domain: "{{ item.user }}"
+    limit_type: "{{ item.type }}"
+    limit_item: "{{ item.item }}"
+    value: "{{ item.value }}"
+  with_items: "{{ config.ulimit }}"
+  become: yes
+  register: ulimit_output
+
+- name: ulimit output
+  debug: msg={{ ulimit_output }}
+  when: ulimit_output is defined

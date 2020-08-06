@@ -1,0 +1,87 @@
+---
+#playbook.yaml
+
+# Ansible play to initialize custom variables
+# The below blocks of helps in setting the ansible variables 
+# according to the CR object passed 
+- name: DISPLAY THE INVENTORY VARS
+  collections:
+    - community.kubernetes
+    - operator_sdk.util
+  hosts: localhost
+  gather_facts: no
+  tasks:
+     - name: Set Local Variables
+       block:
+        - import_role:
+            name: setvariables
+
+# The play gets executed when the stop_on_failure is undefined or set to false
+# stating that the play book execution shouldn't stop even if the tasks fail on the hosts
+# The below tasks considers the host_config_serial_variable variable value set from the previous block
+# Executes the number of hosts set in the host_config_serial_variable at every iteration
+- name: Execute Roles based on hosts and based on the Failure condition
+  collections:
+    - community.kubernetes
+    - operator_sdk.util
+  hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
+  serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
+  any_errors_fatal: "{{ stop_on_failure|default(false) }}"
+  gather_facts: no
+  tasks:
+    - name: HostConfig Block
+      block:
+       - import_role:
+           name: sysctl
+         when: config.sysctl is defined
+       - import_role:
+           name: ulimit
+         when: config.ulimit is defined
+       - name: Update the file for success hosts
+         local_action: lineinfile line={{ inventory_hostname }} create=yes dest=/opt/ansible/data/hostconfig/{{ meta.name }}/success_hosts
+         throttle: 1
+      rescue:
+       - name: Update the file for Failed hosts
+         local_action: lineinfile line={{ inventory_hostname }} create=yes dest=/opt/ansible/data/hostconfig/{{ meta.name }}/failed_hosts
+         throttle: 1
+      when: ((stop_on_failure is undefined or stop_on_failure is defined) and max_failure_percentage is undefined) or (stop_on_failure is true and max_failure_percentage is defined)
+
+# The below play executes with hostconfig role only when the stop_failure is false 
+# and when the max_failure_percentage variable is defined.
+# The below tasks considers the host_config_serial_variable variable value set from the previous block
+# Executes the number of hosts set in the host_config_serial_variable at every iteration
+- name: Execute Roles based on hosts and based on percentage of Failure
+  hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
+  serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
+  max_fail_percentage: "{{ hostvars['localhost']['max_failure_percentage'] }}"
+  gather_facts: no
+  tasks:
+    - name: Max Percetage Block      
+      block:
+       - import_role:
+           name: sysctl
+         when: config.sysctl is defined
+       - import_role:
+           name: ulimit
+         when: config.ulimit is defined
+      when: (stop_on_failure is false or stop_on_failure is undefined) and (max_failure_percentage is defined)
+
+# Update K8 CR Status
+- name: Update CR Status
+  collections:
+    - community.kubernetes
+    - operator_sdk.util
+  hosts: localhost
+  gather_facts: no
+  tasks:
+     - name: Update CR Status
+       block:
+       - name: Write results to resource status
+         k8s_status:
+           api_version: hostconfig.airshipit.org/v1alpha1
+           kind: HostConfig
+           name: '{{ meta.name }}'
+           namespace: '{{ meta.namespace }}'
+           status:
+              hostConfigStatus: "{{ hostConfigStatus }}"
+       when: hostConfigStatus is defined

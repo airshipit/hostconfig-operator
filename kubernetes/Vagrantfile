@@ -3,7 +3,16 @@
 
 servers = [
     {
-        :name => "k8s-master",
+        :name => "k8s-lbhaproxy",
+        :type => "lbhaproxy",
+        :box => "ubuntu/xenial64",
+        :box_version => "20180831.0.0",
+        :eth1 => "192.168.205.13",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "k8s-master-1",
         :type => "master",
         :box => "ubuntu/xenial64",
         :box_version => "20180831.0.0",
@@ -12,11 +21,29 @@ servers = [
         :cpu => "2"
     },
     {
+        :name => "k8s-master-2",
+        :type => "master-join",
+        :box => "ubuntu/xenial64",
+        :box_version => "20180831.0.0",
+        :eth1 => "192.168.205.11",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "k8s-master-3",
+        :type => "master-join",
+        :box => "ubuntu/xenial64",
+        :box_version => "20180831.0.0",
+        :eth1 => "192.168.205.12",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
         :name => "k8s-node-1",
         :type => "node",
         :box => "ubuntu/xenial64",
         :box_version => "20180831.0.0",
-        :eth1 => "192.168.205.11",
+        :eth1 => "192.168.205.14",
         :mem => "2048",
         :cpu => "2"
     },
@@ -25,7 +52,34 @@ servers = [
         :type => "node",
         :box => "ubuntu/xenial64",
         :box_version => "20180831.0.0",
-        :eth1 => "192.168.205.12",
+        :eth1 => "192.168.205.15",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "k8s-node-3",
+        :type => "node",
+        :box => "ubuntu/xenial64",
+        :box_version => "20180831.0.0",
+        :eth1 => "192.168.205.16",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "k8s-node-4",
+        :type => "node",
+        :box => "ubuntu/xenial64",
+        :box_version => "20180831.0.0",
+        :eth1 => "192.168.205.17",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "k8s-node-5",
+        :type => "node",
+        :box => "ubuntu/xenial64",
+        :box_version => "20180831.0.0",
+        :eth1 => "192.168.205.18",
         :mem => "2048",
         :cpu => "2"
     }
@@ -83,7 +137,7 @@ $configureMaster = <<-SCRIPT
 
     # install k8s master
     HOST_NAME=$(hostname -s)
-    kubeadm init --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$IP_ADDR  --node-name $HOST_NAME --pod-network-cidr=172.16.0.0/16
+    kubeadm init --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$IP_ADDR  --node-name $HOST_NAME --pod-network-cidr=172.16.0.0/16 --control-plane-endpoint "192.168.205.13:443" --upload-certs
 
     #copying credentials to regular user - vagrant
     sudo --user=vagrant mkdir -p /home/vagrant/.kube
@@ -94,12 +148,27 @@ $configureMaster = <<-SCRIPT
     export KUBECONFIG=/etc/kubernetes/admin.conf
     kubectl apply -f https://raw.githubusercontent.com/SirishaGopigiri/airship-host-config/master/kubernetes/calico/calico.yaml
 
+    kubeadm init phase upload-certs --upload-certs > /etc/upload_cert
     kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
     chmod +x /etc/kubeadm_join_cmd.sh
+
+    cat /etc/kubeadm_join_cmd.sh > /etc/kubeadm_join_master.sh
+    CERT=`tail -1 /etc/upload_cert`
+    sed -i '$ s/$/ --control-plane --certificate-key '"$CERT"'/' /etc/kubeadm_join_master.sh
 
     #Install sshpass for futher docker image copy
     apt-get install -y sshpass
 
+SCRIPT
+
+$configureMasterJoin = <<-SCRIPT
+    echo -e "\nThis is Master with Join Commadn:\n"
+    apt-get install -y sshpass
+    sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.205.10:/etc/kubeadm_join_master.sh .
+    IP_ADDR=`ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:`
+
+    sed -i '$ s/$/ --apiserver-advertise-address '"$IP_ADDR"'/' kubeadm_join_master.sh
+    sh ./kubeadm_join_master.sh
 SCRIPT
 
 $configureNode = <<-SCRIPT
@@ -123,21 +192,24 @@ Vagrant.configure("2") do |config|
             config.vm.provider "virtualbox" do |v|
 
                 v.name = opts[:name]
-            	 v.customize ["modifyvm", :id, "--groups", "/Ballerina Development"]
+                v.customize ["modifyvm", :id, "--groups", "/Ballerina Development"]
                 v.customize ["modifyvm", :id, "--memory", opts[:mem]]
                 v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
 
             end
 
-            # we cannot use this because we can't install the docker version we want - https://github.com/hashicorp/vagrant/issues/4871
-            # config.vm.provision "docker"
-
-            config.vm.provision "shell", inline: $configureBox
 
             if opts[:type] == "master"
+                config.vm.provision "shell", inline: $configureBox
                 config.vm.provision "shell", inline: $configureMaster
                 config.vm.provision "file", source: "../airship-host-config", destination: "/home/vagrant/airship-host-config/airship-host-config"
+            elsif opts[:type] == "lbhaproxy"
+               config.vm.provision "shell", :path => "haproxy.sh"
+            elsif opts[:type] == "master-join"
+                config.vm.provision "shell", inline: $configureBox
+                config.vm.provision "shell", inline: $configureMasterJoin
             else
+                config.vm.provision "shell", inline: $configureBox
                 config.vm.provision "shell", inline: $configureNode
             end
 

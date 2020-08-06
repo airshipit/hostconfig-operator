@@ -17,13 +17,13 @@ spec:
       containers:
         - name: airship-host-config
           # Replace this with the built image name
-          image: "AIRSHIP_HOSTCONFIG_IMAGE"
-          imagePullPolicy: "PULL_POLICY"
-          securityContext:
-            privileged: true
+          image: "quay.io/sirishagopigiri/airship-host-config"
+          imagePullPolicy: "IfNotPresent"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
+          - mountPath: /opt/ansible/data
+            name: data
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
@@ -35,6 +35,10 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "airship-host-config"
+            - name: ANSIBLE_FILTER_PLUGINS
+              value: /opt/ansible/plugins/filter
+            - name: ANSIBLE_FORKS
+              value: "100"
             - name: ANSIBLE_GATHERING
               value: explicit
             - name: ANSIBLE_INVENTORY
@@ -43,6 +47,10 @@ spec:
               value: "USERNAME"
             - name: PASS
               value: "PASSWORD"
+            - name: SECRET_NAMESPACE
+              value: "default"
       volumes:
         - name: runner
+          emptyDir: {}
+        - name: data
           emptyDir: {}
