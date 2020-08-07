@@ -32,7 +32,7 @@ Execute the setup.sh script to build and copy the Airship Hostconfig Ansible Ope
 ./setup.sh
 ```
 
-If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kuberntes nodes when executing the setup.sh script. So this configures the HostConfig Ansible Operator pod to use the "username" and "password" passed when the hostconfig ansible role is executed on the kubernetes nodes.
+If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kubernetes nodes when executing the setup.sh script. So this configures the HostConfig Ansible Operator pod to use the "username" and "password" passed when the hostconfig ansible role is executed on the kubernetes nodes.
 
 ```
 ./setup.sh <username> <password>
@@ -81,7 +81,7 @@ Execute the setup.sh script to build and copy the Airship Hostconfig Ansible Ope
 ./setup.sh
 ```
 
-If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kuberntes nodes when executing the setup.sh script. So this configures the HostConfig Ansible Operator pod to use the "username" and "password" passed when the hostconfig ansible role is executed on the kubernetes nodes.
+If you want to execute the ansible playbook in the hostconfig example with a different user, you can also set the username and password of the Kubernetes nodes when executing the setup.sh script. So this configures the HostConfig Ansible Operator pod to use the "username" and "password" passed when the hostconfig ansible role is executed on the kubernetes nodes.
 
 ```
 ./setup.sh <username> <password>
