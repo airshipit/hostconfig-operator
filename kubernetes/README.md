@@ -26,7 +26,7 @@ Execute the following vagrant command to start a new Kubernetes cluster, this wi
 vagrant up
 ```
 
-You can also start invidual machines by vagrant up k8s-head, vagrant up k8s-node-1 and vagrant up k8s-node-2
+You can also start individual machines by vagrant up k8s-head, vagrant up k8s-node-1 and vagrant up k8s-node-2
 
 If you would need more master nodes, you can edit the servers array in the Vagrantfile. Please change the name, and IP address for eth1.
 ```
@@ -53,8 +53,7 @@ Also update the haproxy.cfg file to add more master servers.
 ```
 
 
-If more than five nodes are required, you can edit the servers array in the Vagrantfile. Please chang ethe name, an
-d IP address for eth1.
+If more than five nodes are required, you can edit the servers array in the Vagrantfile. Please change the name, and IP address for eth1.
 
 ```
 servers = [
