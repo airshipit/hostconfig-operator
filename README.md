@@ -64,7 +64,7 @@ export KUBECONFIG=~/.kube/config
 Clone the repository
 
 ```
-git clone https://github.com/SirishaGopigiri/airship-host-config.git -b june_29
+git clone https://github.com/SirishaGopigiri/airship-host-config.git
 ```
 
 Navigate to airship-host-config folder

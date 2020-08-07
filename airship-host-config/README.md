@@ -12,7 +12,7 @@ max_hosts_parallel: Caps the numbers of hosts that are executed in each iteratio
 
 stop_on_failure: When set to true stops the playbook execution on that host and subsequent hosts whenever a task fails on a node
 
-max_failure_percenatge: Sets the Maximum failure percenatge of hosts that are allowed to fail on a every iteration
+max_failure_percentage: Sets the Maximum failure percentage of hosts that are allowed to fail on a every iteration
 
 reexecute: Executes the playbook again on the successful hosts as well
 

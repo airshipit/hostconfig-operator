@@ -11,7 +11,7 @@ A vagrant script for setting up a Kubernetes cluster using Kubeadm
 Git clone the repo on the host machine which has vagrant and virtual box installed
 
 ```
-git clone https://github.com/SirishaGopigiri/airship-host-config.git -b june_29
+git clone https://github.com/SirishaGopigiri/airship-host-config.git
 ```
 
 Navigate to the kubernetes folder
