@@ -7,6 +7,7 @@ __metaclass__ = type
 # Interested Groups are defined using the host_groups
 # Returns a list of integers [2, 1, 3] based on the host_groups variables
 
+
 def hostconfig_sequential(hostconfig_host_groups, groups):
     seq_list = list()
     if type(hostconfig_host_groups) != list:

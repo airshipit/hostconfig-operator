@@ -13,7 +13,7 @@
 - project:
     check:
       jobs:
-        - noop
+        - airship-host-config
     gate:
       jobs:
         - noop

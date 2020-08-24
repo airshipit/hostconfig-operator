@@ -1,17 +1,23 @@
 ---
-# The below blocak of code helps in intializing the hosts, serial variables
+# The below block of code helps in initializing the hosts, serial variables
 # that would be used by the ansible playbook to control sequential or parallel execution
 - name: Host Groups
   block:
-    - set_fact:
-        reexecute: false
-      when: reexecute is undefined
     - set_fact:
         match_host_groups: false
       when: match_host_groups is undefined
     - set_fact:
         sequential: false
       when: sequential is undefined
+    - set_fact:
+        stop_on_failure: false
+      when: stop_on_failure is undefined
+    - set_fact:
+        max_failure_percentage: 0
+      when: max_failure_percentage is undefined
+    - debug:
+        msg: "{{ config }}"
+      when: config is defined
     # This hostconfig_host_groups custom filter plugin helps in computing the AND or OR
     # operation on the host_groups labels passed through the CR object.
     # The AND and OR operation is controlled using the match_host_groups variable.
@@ -19,7 +25,7 @@
     # every iteration.
     # Returns: [[192.168.1.5, 192.168.1.3], [192.168.1.4]]
     - set_fact:
-        hostconfig_host_groups: "{{ host_groups|hostconfig_host_groups(groups, meta.name, match_host_groups, reexecute) }}"
+        hostconfig_host_groups: "{{ host_groups|hostconfig_host_groups(groups, match_host_groups) }}"
     - debug:
         msg: "Host Groups Variable {{ hostconfig_host_groups }}"
     # The hostconfig_serial custom filter plugin helps in calculating the list of hosts
@@ -59,16 +65,3 @@
     - debug:
         msg: "{{ hostconfig_serial_variable }}"
   when: host_groups is undefined and max_hosts_parallel is defined
-- name: Failure Testing
-  block:
-    # This block of max_failure_percentage helps in intaializing default value
-    # to the max_failure_percentage variable so that the below play would be selected
-    # appropriately
-    - set_fact:
-        max_failure_percentage: "{{ max_failure_percentage }}"
-      when: max_failure_percentage is defined
-    # Please note we are just setting some default value to the max_failure_percentage
-    # so that we can check the conditions below
-    - set_fact:
-        max_failure_percentage: 100
-      when: max_failure_percentage is undefined

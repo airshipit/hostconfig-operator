@@ -1,0 +1,18 @@
+# This HostConfig CR object when created executes
+# the shell command on the master and worker nodes
+# scheduling not more that 2 nodes per iteration.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example7
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+      - "worker"
+  max_hosts_parallel: 2
+  config:
+    shell:
+      - command: "date;hostname;sleep 5"

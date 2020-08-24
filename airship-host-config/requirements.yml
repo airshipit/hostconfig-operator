@@ -1,3 +1,4 @@
+# Installing kubernetes and operator_sdk libraries
 collections:
   - community.kubernetes
   - operator_sdk.util

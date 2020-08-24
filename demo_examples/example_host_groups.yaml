@@ -1,0 +1,18 @@
+# This example executes the shell and kubeadm commands
+# on all the nodes labelled as master nodes in the
+# kubernetes cluster
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example1
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+  config:
+    shell:
+      - command: "date;hostname"
+    kubeadm:
+      - command: "alpha certs check-expiration"

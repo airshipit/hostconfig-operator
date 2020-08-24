@@ -1,0 +1,13 @@
+---
+# To execute shell commands on the kubernetes nodes
+# List of commands can be specified
+- name: Execute shell command on nodes
+  shell: "{{ shell_item.command }}"
+  with_items: "{{ config.shell }}"
+  loop_control:
+    loop_var: shell_item
+  register: shell_output
+
+- name: shell output
+  debug: msg={{ shell_output }}
+  when: shell_output is defined

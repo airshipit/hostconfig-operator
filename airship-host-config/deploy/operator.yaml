@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: airship-host-config
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       name: airship-host-config
@@ -14,16 +14,28 @@ spec:
         name: airship-host-config
     spec:
       serviceAccountName: airship-host-config
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - airship-host-config
+            topologyKey: "kubernetes.io/hostname"
+      nodeSelector:
+        kubernetes.io/role: master
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
       containers:
         - name: airship-host-config
-          # Replace this with the built image name
-          image: "quay.io/sirishagopigiri/airship-host-config"
+          image: "airship-hostconfig:local"
           imagePullPolicy: "IfNotPresent"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
-          - mountPath: /opt/ansible/data
-            name: data
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
@@ -51,6 +63,4 @@ spec:
               value: "default"
       volumes:
         - name: runner
-          emptyDir: {}
-        - name: data
           emptyDir: {}

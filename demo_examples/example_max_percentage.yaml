@@ -1,0 +1,21 @@
+# This HostConfig CR object executes the shell and kubeadm
+# commands on the master nodes in the cluster.
+# And execution stops at the task for all nodes
+# when failed nodes exceed 30%.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example5
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+  stop_on_failure: false
+  max_failure_percentage: 30
+  config:
+    shell:
+      - command: "date;hostname"
+    kubeadm:
+      - command: "alpha certs check-expiration"

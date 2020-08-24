@@ -1,0 +1,26 @@
+---
+# To check the kubernetes components certificte expiration details
+# Will also annotate the node with the expiration details
+- name: Execute kubeadm command cert expirataion
+  shell: >
+     kubeadm alpha certs check-expiration | tail -n +4 | sed -r "/^\s*$/d"|grep -v "CERTIFICATE" | awk '{printf("{ %s: %s %s %s %s %s },", $1, $2, $3, $4, $5, $6)}' | sed "s/.$//"
+  when: config.kubeadm_check_cert_expiration is defined and config.kubeadm_check_cert_expiration is true
+  become: yes
+  register: kubeadm_output
+
+- name: kubeadm output
+  debug: msg={{ kubeadm_output }}
+  when: kubeadm_output is defined
+
+- name: Annotate kubernetes nodes
+  delegate_to: localhost
+  k8s_raw:
+    state: present
+    definition:
+       apiVersion: v1
+       kind: Node
+       metadata:
+         name: "{{ lookup('vars', 'kubernetes.io/hostname') }}"
+         annotations:
+           cert-expiration: "{{ kubeadm_output.stdout }}"
+  when: kubeadm_output.stdout is defined

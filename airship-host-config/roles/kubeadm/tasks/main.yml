@@ -1,0 +1,15 @@
+---
+# To execute kubeadm commands on the kubernetes nodes
+# List of commands can be specified
+- name: Execute kubeadm command cert expirataion
+  shell: "/usr/bin/kubeadm {{ kubeadm_item.command }}"
+  with_items: "{{ config.kubeadm }}"
+  when: config.kubeadm is defined
+  loop_control:
+    loop_var: kubeadm_item
+  become: yes
+  register: kubeadm_output
+
+- name: kubeadm output
+  debug: msg={{ kubeadm_output }}
+  when: kubeadm_output is defined

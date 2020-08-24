@@ -2,7 +2,4 @@
 - version: v1alpha1
   group: hostconfig.airshipit.org
   kind: HostConfig
-  playbook: playbooks/create_playbook.yaml
-  finalizer:
-     name: finalizer.hostconfig.airshipit.org
-     playbook: playbooks/delete_playbook.yaml
+  playbook: playbooks/create_playbook.yaml # Main playbook that gets executed whenever a new HostConfig CR object is created or updated

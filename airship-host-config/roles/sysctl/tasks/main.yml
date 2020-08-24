@@ -1,4 +1,6 @@
 ---
+# Configures the array of sysctl configuration provided in the CR
+# object on the corresponding kubernetes node selected.
 - name: sysctl configuration
   sysctl:
     name: "{{ item.name }}"

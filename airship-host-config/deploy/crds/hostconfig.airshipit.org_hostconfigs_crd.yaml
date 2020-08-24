@@ -17,8 +17,19 @@ spec:
   validation:
     openAPIV3Schema:
       type: object
-      x-kubernetes-preserve-unknown-fields: true
+      x-kubernetes-preserve-unknown-fields: true # Marking true so that the CR status can be updated
+      required:
+        - apiVersion
+        - kind
+        - metadata
+        - spec
       properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
         spec:
           description: "HostConfig Spec to perform hostconfig Opertaions."
           type: object

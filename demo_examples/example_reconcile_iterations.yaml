@@ -1,0 +1,21 @@
+# This CR executes the shell and kubeadm commands on the
+# master nodes for every 30s. The execution happens for
+# 3 times.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  annotations:
+    ansible.operator-sdk/reconcile-period: "30s"
+    ansible.operator-sdk/reconcile-iterations: "3"
+  name: example10
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+  config:
+    shell:
+      - command: "date;hostname"
+    kubeadm:
+      - command: "alpha certs check-expiration"

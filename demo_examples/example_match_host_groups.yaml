@@ -1,0 +1,29 @@
+# This example executes the shell command on the nodes
+# which match the below conditions. Please note the execution
+# on all the nodes happen in parallel as "sequential is false"
+#
+# Only one iteration: Nodes matching labels:
+# 1. "us-east-1a" and "master"
+# 2. "us-east-1a" and "worker"
+# 3. "us-east-1b" and "master"
+# 4. "us-east-1b" and "worker"
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example3
+spec:
+  host_groups:
+   - name: "topology.kubernetes.io/zone"
+     values:
+      - "us-east-1a"
+      - "us-east-1b"
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+      - "worker"
+  sequential: false
+  match_host_groups: true
+  config:
+    shell:
+      - command: "date;hostname"

@@ -1,4 +1,6 @@
 ---
+# Configures ulimit on the selected kubernetes nodes
+# Accepts a list of ulimit configuration
 - name: ulimit configuration
   pam_limits:
     domain: "{{ item.user }}"

@@ -1,9 +1,9 @@
 ---
-#playbook.yaml
+# create_playbook.yaml
 
 # Ansible play to initialize custom variables
-# The below blocks of helps in setting the ansible variables 
-# according to the CR object passed 
+# The below role of helps in setting the ansible variables
+# according to the CR object passed
 - name: DISPLAY THE INVENTORY VARS
   collections:
     - community.kubernetes
@@ -16,72 +16,74 @@
         - import_role:
             name: setvariables
 
-# The play gets executed when the stop_on_failure is undefined or set to false
-# stating that the play book execution shouldn't stop even if the tasks fail on the hosts
+# The play gets executed when the
+# (stop_on_failure is defined or undefined or stop_on_failure is false
+# and when max_failure_percentage is undefined)
+# When stop_on_failure is false the playbook execution continues on other hosts
+# expect the execution stops on the failed nodes.
 # The below tasks considers the host_config_serial_variable variable value set from the previous block
 # Executes the number of hosts set in the host_config_serial_variable at every iteration
+# Dynamically gets the roles defined in the config section of the HostConfig CR spec and
+# executes the role with the parameters specified in that role section of the CR.
 - name: Execute Roles based on hosts and based on the Failure condition
   collections:
     - community.kubernetes
     - operator_sdk.util
   hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
   serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
-  any_errors_fatal: "{{ stop_on_failure|default(false) }}"
+  any_errors_fatal: false
   gather_facts: no
   tasks:
     - name: HostConfig Block
       block:
-       - import_role:
-           name: sysctl
-         when: config.sysctl is defined
-       - import_role:
-           name: ulimit
-         when: config.ulimit is defined
-       - name: Update the file for success hosts
-         local_action: lineinfile line={{ inventory_hostname }} create=yes dest=/opt/ansible/data/hostconfig/{{ meta.name }}/success_hosts
-         throttle: 1
-      rescue:
-       - name: Update the file for Failed hosts
-         local_action: lineinfile line={{ inventory_hostname }} create=yes dest=/opt/ansible/data/hostconfig/{{ meta.name }}/failed_hosts
-         throttle: 1
-      when: ((stop_on_failure is undefined or stop_on_failure is defined) and max_failure_percentage is undefined) or (stop_on_failure is true and max_failure_percentage is defined)
+       - include_role:
+           name: "{{ item.key }}"
+         with_dict: "{{ config }}"
+      when: (config is defined) and (stop_on_failure is undefined or stop_on_failure is false) and (max_failure_percentage is undefined)
 
-# The below play executes with hostconfig role only when the stop_failure is false 
-# and when the max_failure_percentage variable is defined.
+
+# The play gets executed when the
+# (when stop_on_failure is set to true and when max_failure_percentage is defined or undefined)
+# When stop_on_failure is true the playbook execution stops on all hosts
+# whenever one task fails on any one of the node.
 # The below tasks considers the host_config_serial_variable variable value set from the previous block
 # Executes the number of hosts set in the host_config_serial_variable at every iteration
-- name: Execute Roles based on hosts and based on percentage of Failure
-  hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
-  serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
-  max_fail_percentage: "{{ hostvars['localhost']['max_failure_percentage'] }}"
-  gather_facts: no
-  tasks:
-    - name: Max Percetage Block      
-      block:
-       - import_role:
-           name: sysctl
-         when: config.sysctl is defined
-       - import_role:
-           name: ulimit
-         when: config.ulimit is defined
-      when: (stop_on_failure is false or stop_on_failure is undefined) and (max_failure_percentage is defined)
-
-# Update K8 CR Status
-- name: Update CR Status
+# Dynamically gets the roles defined in the config section of the HostConfig CR spec and
+# executes the role with the parameters specified in that role section of the CR.
+- name: Execute Roles based on hosts and based on the Failure condition
   collections:
     - community.kubernetes
     - operator_sdk.util
-  hosts: localhost
+  hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
+  serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
+  any_errors_fatal: true
   gather_facts: no
   tasks:
-     - name: Update CR Status
-       block:
-       - name: Write results to resource status
-         k8s_status:
-           api_version: hostconfig.airshipit.org/v1alpha1
-           kind: HostConfig
-           name: '{{ meta.name }}'
-           namespace: '{{ meta.namespace }}'
-           status:
-              hostConfigStatus: "{{ hostConfigStatus }}"
-       when: hostConfigStatus is defined
+    - name: HostConfig Block
+      block:
+       - include_role:
+           name: "{{ item.key }}"
+         with_dict: "{{ config }}"
+      when: config is defined and stop_on_failure is defined and stop_on_failure is true
+
+# The below play executes with hostconfig role only when the stop_failure is false
+# and when the max_failure_percentage variable is defined.
+# The below tasks considers the host_config_serial_variable variable value set from the previous block
+# Executes the number of hosts set in the host_config_serial_variable at every iteration.
+# Dynamically gets the roles defined in the config section of the HostConfig CR spec and
+# executes the role with the parameters specified in that role section of the CR.
+- name: Execute Roles based on hosts and based on percentage of Failure
+  collections:
+    - community.kubernetes
+    - operator_sdk.util
+  hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
+  serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
+  max_fail_percentage: "{{ max_failure_percentage | default(0) }}"
+  gather_facts: no
+  tasks:
+    - name: Max Percentage Block
+      block:
+       - include_role:
+           name: "{{ item.key }}"
+         with_dict: "{{ config }}"
+      when: (config is defined) and (stop_on_failure is false or stop_on_failure is undefined) and (max_failure_percentage is defined)

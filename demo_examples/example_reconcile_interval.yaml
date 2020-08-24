@@ -1,0 +1,19 @@
+# This HostConfig CR executes the kubeadm command on the
+# master nodes for every 30s for an interval of 2m40s.
+# This covers 5 iterations.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  annotations:
+    ansible.operator-sdk/reconcile-period: "30s"
+    ansible.operator-sdk/reconcile-interval: "2m40s"
+  name: example11
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+  config:
+    kubeadm:
+       - command: "alpha certs check-expiration"

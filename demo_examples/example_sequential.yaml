@@ -1,0 +1,18 @@
+# In this example the shell command is executed
+# on all the master nodes first and then on all
+# the worker nodes in the second iteration.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example2
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+      - "worker"
+  sequential: true
+  config:
+    shell:
+      - command: "date;hostname;sleep 5"

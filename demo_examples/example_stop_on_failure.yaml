@@ -1,0 +1,20 @@
+# This CR executes the shell and kubeadm commands
+# on the master nodes and stops execution on all the
+# nodes whenever a master node fails at any task
+# as part of the execution.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example6
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+  stop_on_failure: true
+  config:
+    shell:
+      - command: "date;hostname"
+    kubeadm:
+      - command: "alpha certs check-expiration"

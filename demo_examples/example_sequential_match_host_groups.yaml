@@ -1,0 +1,32 @@
+# This example HostConfig CR when created executes
+# the shell command on the nodes which match the
+# below labels in a sequence.
+#
+# Iteration 1: nodes with labels "us-east-1a" and "master" nodes
+# Iteration 2: nodes with labels "us-east-1a" and "worker" nodes
+# Iteration 3: nodes with labels "us-east-1b" and "master" nodes
+# Iteration 4: nodes with labels "us-east-1b" and "worker" nodes
+#
+# Please note that the nodes which have already executed in previous
+# iteration will not be scheduled again in the next iteration even
+# if the labels match.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example4
+spec:
+  host_groups:
+   - name: "topology.kubernetes.io/zone"
+     values:
+      - "us-east-1a"
+      - "us-east-1b"
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+      - "worker"
+  sequential: true
+  match_host_groups: true
+  config:
+    shell:
+      - command: "date;hostname;sleep 5"

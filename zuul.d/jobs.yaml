@@ -1,0 +1,33 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- job:
+    name: airship-host-config
+    nodeset: airship-hostconfig-single-node
+    pre-run: playbooks/airship-hostconfig-deploy-docker.yaml
+    timeout: 3600
+    run: playbooks/airship-host-config.yaml
+    post-run: playbooks/airship-collect-logs.yaml
+    attempts: 1
+    vars:
+      gate_scripts:
+        - ./tools/deployment/00_install_kind.sh
+        - ./tools/deployment/01_install_kubectl.sh
+        - ./tools/deployment/02_install_operator_sdk.sh
+        - ./tools/deployment/10_create_hostconfig_cluster.sh
+        - ./tools/deployment/20_configure_ssh_on_nodes.sh
+        - ./tools/deployment/30_create_labels.sh
+        - ./tools/deployment/40_deploy_hostconfig_operator.sh
+        - ./tools/deployment/50_test_hostconfig_cr.sh
+        - ./tools/deployment/51_test_hostconfig_cr_reconcile.sh
+        - ./tools/deployment/52_test_hostconfig_cr_failure.sh
+    voting: false

@@ -1,0 +1,23 @@
+# This CR when executed configures the passed sysctl and ulimit
+# configuration on the kubernetes master nodes.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example8
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+  config:
+   sysctl:
+   - name: "net.ipv6.route.gc_interval"
+     value: "30"
+   - name: "net.netfilter.nf_conntrack_frag6_timeout"
+     value: "120"
+   ulimit:
+   - user: "vagrant"
+     type: "hard"
+     item: "cpu"
+     value: "unlimited"
