@@ -16,19 +16,18 @@ set -xe
 
 export HOSTCONFIG_WS=${HOSTCONFIG_WS:-$PWD}
 export HOSTCONFIG=${HOSTCONFIG:-"$HOSTCONFIG_WS/airship-host-config"}
-export IMAGE_NAME=${IMAGE_NAME:-"airship-hostconfig:local"}
 
 # Building hostconfig image
-cd $HOSTCONFIG
-operator-sdk build $IMAGE_NAME
+make images
+
+DOCKER_IMAGE=$(make print-docker-image-tag)
 
 # Copying hostconfig image to nodes
-kind load docker-image $IMAGE_NAME --name hostconfig
+kind load docker-image $DOCKER_IMAGE --name hostconfig
 
 # Deploying HostConfig Operator Pod
-cd $HOSTCONFIG_WS
-sed -i "s/AIRSHIP_HOSTCONFIG_IMAGE/$IMAGE_NAME/g" $HOSTCONFIG/deploy/operator.yaml
-sed -i "s/PULL_POLICY/IfNotPresent/g" $HOSTCONFIG/deploy/operator.yaml
+sed -i "s|AIRSHIP_HOSTCONFIG_IMAGE|$DOCKER_IMAGE|g" $HOSTCONFIG/deploy/operator.yaml
+sed -i "s|PULL_POLICY|IfNotPresent|g" $HOSTCONFIG/deploy/operator.yaml
 
 kubectl apply -f $HOSTCONFIG/deploy/crds/hostconfig.airshipit.org_hostconfigs_crd.yaml
 kubectl apply -f $HOSTCONFIG/deploy/role.yaml

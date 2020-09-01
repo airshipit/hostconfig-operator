@@ -22,4 +22,3 @@
   assert:
     that:
       - docker_version.rc == 0
-

@@ -15,13 +15,3 @@
     nodes:
       - name: primary
         label: ubuntu-bionic
-- nodeset:
-    name: airship-hostconfig-single-16GB-bionic-node
-    nodes:
-      - name: primary
-        label: ubuntu-bionic-expanded
-- nodeset:
-    name: airship-hostconfig-single-32GB-bionic-node
-    nodes:
-      - name: primary
-        label: ubuntu-bionic-32GB

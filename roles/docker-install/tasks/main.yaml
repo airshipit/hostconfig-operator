@@ -77,4 +77,3 @@
   file:
     path: /var/run/docker.sock
     group: docker
-

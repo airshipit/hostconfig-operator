@@ -15,15 +15,19 @@
     - name: "set default gate scripts"
       set_fact:
         gate_scripts_default:
-          - ./tools/deployment/host_config/01_install_kubectl.sh
-          - ./tools/deployment/host_config/10_test_config.sh
-          - ./tools/deployment/host_config/20_deploy_k8cluster_vagrant.sh
-          - ./tools/deployment/host_config/30_deploy_host_config.sh
-          - ./tools/deployment/host_config/40_test_host_config_cr.sh
+          - ./tools/deployment/00_install_kind.sh
+          - ./tools/deployment/01_install_kubectl.sh
+          - ./tools/deployment/10_create_hostconfig_cluster.sh
+          - ./tools/deployment/20_configure_ssh_on_nodes.sh
+          - ./tools/deployment/30_create_labels.sh
+          - ./tools/deployment/40_deploy_hostconfig_operator.sh
+          - ./tools/deployment/50_test_hostconfig_cr.sh
+          - ./tools/deployment/51_test_hostconfig_cr_reconcile.sh
+          - ./tools/deployment/52_test_hostconfig_cr_failure.sh
 
     - name: "Run gate scripts"
       include_role:
-        name: hostconfig-run-script
+        name: hostconfig-operator-run-script
       vars:
         gate_script_path: "{{ item }}"
       with_items: "{{ gate_scripts | default(gate_scripts_default) }}"

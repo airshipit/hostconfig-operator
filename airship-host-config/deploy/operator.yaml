@@ -31,8 +31,8 @@ spec:
           effect: NoSchedule
       containers:
         - name: airship-host-config
-          image: "airship-hostconfig:local"
-          imagePullPolicy: "IfNotPresent"
+          image: "AIRSHIP_HOSTCONFIG_IMAGE"
+          imagePullPolicy: "PULL_POLICY"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
