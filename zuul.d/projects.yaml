@@ -17,7 +17,6 @@
         - airship-hostconfig-operator-build-image
     gate:
       jobs:
-        - noop
         - airship-hostconfig-operator-build-image
     post:
       jobs:
