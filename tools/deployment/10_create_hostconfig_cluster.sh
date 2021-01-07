@@ -30,7 +30,7 @@ nodes:
   - role: worker
 EOF
 
-kind create cluster --config ${REMOTE_WORK_DIR}/kind-hostconfig.yaml --name hostconfig -v 2
+kind create cluster --config ${REMOTE_WORK_DIR}/kind-hostconfig.yaml --name hostconfig --image kindest/node:v1.18.6 -v 2
 
 #Wait till HostConfig Cluster is ready
 end=$(($(date +%s) + $TIMEOUT))

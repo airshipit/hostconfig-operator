@@ -16,7 +16,7 @@ COPY watches.yaml ${HOME}/watches.yaml
 USER root
 RUN usermod --password rhEpSyEyZ9rxc root
 RUN dnf install openssh-clients -y
-RUN yum install -y wget && wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm && rpm -ivh epel-release-6-8.noarch.rpm && yum --enablerepo=epel -y install sshpass
+RUN rpm -ivh https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/epel-release-6-8.noarch.rpm && yum --enablerepo=epel -y install sshpass
 USER ansible-operator
 
 # Copying the configuration roles

@@ -49,4 +49,4 @@
         pass-to-parent: true
     vars:
       image: quay.io/airshipit/hostconfig-operator
-      image_repo: https://quay.io/api/v1/
+      image_repo: quay.io

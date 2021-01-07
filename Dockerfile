@@ -15,10 +15,7 @@ COPY airship-host-config/watches.yaml ${HOME}/watches.yaml
 # Installing ssh clients - used to connect to kubernetes nodes
 USER root
 RUN dnf install openssh-clients -y
-RUN dnf install -y wget && \
-     wget -O /tmp/epel-release-6-8.noarch.rpm \
-     http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm \
-     && rpm -ivh /tmp/epel-release-6-8.noarch.rpm \
+RUN rpm -ivh https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/epel-release-6-8.noarch.rpm \
      && dnf -y install sshpass
 USER ansible-operator
 
