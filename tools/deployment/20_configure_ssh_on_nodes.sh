@@ -25,6 +25,7 @@ sudo apt-get install -y openssl sshpass jq
 ENCRYPTED_PASSWORD=`openssl passwd -crypt $PASSWORD`
 
 # Configuring SSH on Kubernetes nodes
+mkdir -p ssh
 for i in "${!hosts[@]}"
 do
     sudo docker exec ${hosts[i]} apt-get update
@@ -33,8 +34,8 @@ do
     sudo docker exec ${hosts[i]} useradd -m -p $ENCRYPTED_PASSWORD -s /bin/bash $USERNAME
     sudo docker exec ${hosts[i]} bash -c "echo '$USERNAME ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/hostconfig"
     printf 'Working on host %s with Indexs and having IP %s\n' "${hosts[i]}" "$i" "${hosts_ips[i]}"
-    ssh-keygen -q -t rsa -N '' -f ${hosts[i]}
-    sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no -i ${hosts[i]} $USERNAME@${hosts_ips[i]}
-    kubectl create secret generic ${hosts[i]} --from-literal=username=$USERNAME --from-file=ssh_private_key=${hosts[i]}
+    ssh-keygen -q -t rsa -N '' -f ssh/${hosts[i]}
+    sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ssh/${hosts[i]} $USERNAME@${hosts_ips[i]}
+    kubectl create secret generic ${hosts[i]} --from-literal=username=$USERNAME --from-file=ssh_private_key=ssh/${hosts[i]}
     kubectl annotate node ${hosts[i]} secret=${hosts[i]}
 done
