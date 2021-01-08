@@ -8,13 +8,16 @@ DOCKER_REGISTRY     ?= quay.io
 DOCKER_FORCE_CLEAN  ?= true
 DOCKER_IMAGE_NAME   ?= hostconfig-operator
 DOCKER_IMAGE_PREFIX ?= airshipit
-DOCKER_IMAGE_TAG    ?= dev
+DOCKER_IMAGE_TAG    ?= latest
 DOCKER_IMAGE        ?= $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_PREFIX)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 
 # proxy options
 PROXY               ?= http://proxy.foo.com:8000
 NO_PROXY            ?= localhost,127.0.0.1,.svc.cluster.local
 USE_PROXY           ?= false
+
+# docker image publish
+PUBLISH             ?= false
 
 # Build hostconfig-operator image
 .PHONY: images
@@ -35,7 +38,7 @@ endif
 # Publishing hostconfig-operator image to quay.io
 ifeq ($(PUBLISH), true)
 	@echo 'publish hostconfig image to quay.io with image name $(DOCKER_IMAGE)'
-        @docker push $(DOCKER_IMAGE)
+	@docker push $(DOCKER_IMAGE)
 endif
 
 # Priniting docker image tag

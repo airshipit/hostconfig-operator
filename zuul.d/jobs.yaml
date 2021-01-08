@@ -16,7 +16,8 @@
     pre-run: playbooks/airship-hostconfig-operator-deploy-docker.yaml
     timeout: 3600
     run: playbooks/airship-hostconfig-operator.yaml
-    post-run: playbooks/airship-collect-logs.yaml
+    post-run:
+      - playbooks/airship-collect-logs.yaml
     attempts: 1
     vars:
       gate_scripts:
@@ -35,6 +36,8 @@
     name: airship-hostconfig-operator-build-image
     nodeset: airship-hostconfig-single-node
     run: playbooks/airship-hostconfig-operator-build-images.yaml
+    post-run:
+      - playbooks/airship-collect-logs.yaml
     irrelevant-files:
       - ^.*\.md$
       - ^docs/.*$
@@ -42,7 +45,9 @@
 - job:
     name: airship-hostconfig-operator-publish-image
     parent: airship-hostconfig-operator-build-image
-    post-run: playbooks/airship-hostconfig-operator-publish-images.yaml
+    post-run:
+      - playbooks/airship-collect-logs.yaml
+      - playbooks/airship-hostconfig-operator-publish-images.yaml
     secrets:
       - name: hostconfig_operator_image_repo_credentials
         secret: hostconfig_operator_image_repo_credentials
