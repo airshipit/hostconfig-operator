@@ -33,6 +33,7 @@
         chdir: "{{ zuul.project.src_dir }}"
         params:
           DOCKER_IMAGE_TAG: latest
+          DOCKER_REGISTRY: "{{ image_repo }}"
           PUBLISH: "true"
         target: images
 
@@ -41,5 +42,6 @@
         chdir: "{{ zuul.project.src_dir }}"
         params:
           DOCKER_IMAGE_TAG: "{{ zuul.newrev }}"
+          DOCKER_REGISTRY: "{{ image_repo }}"
           PUBLISH: "true"
         target: images
