@@ -20,4 +20,5 @@
         - airship-hostconfig-operator-build-image
     post:
       jobs:
+        - airship-hostconfig-operator-upload-git-mirror
         - airship-hostconfig-operator-publish-image

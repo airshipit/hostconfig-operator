@@ -55,3 +55,15 @@
     vars:
       image: quay.io/airshipit/hostconfig-operator
       image_repo: quay.io
+
+- job:
+    name: airship-hostconfig-operator-upload-git-mirror
+    parent: upload-git-mirror
+    description: |
+      Mirrors airship/hostconfig-operator to airshipit/hostconfig-operator.
+    vars:
+      git_mirror_repository: airshipit/hostconfig-operator
+    secrets:
+      - name: git_mirror_credentials
+        secret: airship_hostconfig_operator_airshipit_github_secret
+        pass-to-parent: true
