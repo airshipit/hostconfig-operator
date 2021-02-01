@@ -1,0 +1,19 @@
+# This example can be used to install apache2,
+# openstackclient on kubernetes hosts, here we are
+# doing it on "hostconfig-control-plane" node.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example-packages
+spec:
+  host_groups:
+   - name: "kubernetes.io/hostname"
+     values:
+      - "hostconfig-control-plane"
+  config:
+    packages:
+    - name: openstack3
+      version: "5.2"
+      pkg_manager: "apt"
+    - name: apache2

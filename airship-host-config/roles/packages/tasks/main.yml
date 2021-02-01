@@ -1,0 +1,6 @@
+# Loops over each package for installation
+- name: loop over each install package
+  include_tasks: install.yml
+  with_items: "{{ config.packages }}"
+  loop_control:
+    loop_var: package_item

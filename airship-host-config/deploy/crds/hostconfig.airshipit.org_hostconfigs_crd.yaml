@@ -88,6 +88,22 @@ spec:
                         type: object
                     required:
                       - name
+                packages:
+                  description: "Dictionary specifying upgrade package deatils"
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      version:
+                        type: string
+                      pkg_manager:
+                        type: string
+                      allow_downgrade:
+                        type: boolean
+                    required:
+                      - name
                 ulimit:
                   description: "An array of ulimit configuration to be performed on the target nodes."
                   type: array

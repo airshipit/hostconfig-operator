@@ -32,7 +32,7 @@
   hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
   serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
   any_errors_fatal: false
-  gather_facts: no
+  gather_facts: true
   tasks:
     - name: HostConfig Block
       block:
@@ -57,7 +57,7 @@
   hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
   serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
   any_errors_fatal: true
-  gather_facts: no
+  gather_facts: true
   tasks:
     - name: HostConfig Block
       block:
@@ -79,7 +79,7 @@
   hosts: "{{ hostvars['localhost']['hostconfig_host_groups'] | default('all')}}"
   serial: "{{ hostvars['localhost']['hostconfig_serial_variable'] | default('100%') }}"
   max_fail_percentage: "{{ max_failure_percentage | default(0) }}"
-  gather_facts: no
+  gather_facts: true
   tasks:
     - name: Max Percentage Block
       block:

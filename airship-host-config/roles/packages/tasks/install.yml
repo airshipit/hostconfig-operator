@@ -1,0 +1,130 @@
+---
+# Tasks written are based on the steps listed here
+# https://docs.docker.com/engine/install/ubuntu/#upgrade-docker-engine
+# Get the package, service and restart flags from the packages.ini file
+- name: read package and service name from ini file
+  set_fact:
+    package: "{{ lookup('ini', 'package section={{ package_item.name }} file=packages.ini') }}"
+    service: "{{ lookup('ini', 'service section={{ package_item.name }} file=packages.ini') | default('') }}"
+    restart: "{{ lookup('ini', 'restart section={{ package_item.name }} file=packages.ini') | default(false) }}"
+    desired_version_installed: false
+    install_version: ""
+    already_installed_version: ""
+  register: set_result
+  ignore_errors: True
+
+# Fail if the package name doesn't exists in packages.ini file
+- name: fail if upgrading {{ package_item.name }} is not supported
+  fail: msg="Upgrading package {{ package_item.name }} is not supported"
+  when: set_result.failed
+
+# This block is used to validate if the specified version exists or is valid
+# If no version is specified we will get the latest version
+# And in case if the package is not supported by the OS is also validated
+# For example: `python-openstackclient` is not valid for `Ubuntu 20.04` OS type
+# Applicable if the `pkg_manager` is `apt` or OS is Ubuntu or Debian
+- block:
+  - name: get installed {{ package }} version
+    shell: "dpkg -l | grep '{{ package }} ' | awk '{print $3}'"
+    register: installed_version
+  - name: get desired version
+    shell: apt-cache madison {{ package }} | awk '{ print $3; }' | grep {{ package_item.version }}
+    register: available_version_result
+    failed_when: false
+    changed_when: false
+    when: package_item.version is defined
+  - name: get latest version of {{ package }}
+    shell: "apt-cache madison {{ package }} | awk '{ print $3; }' | head -1"
+    register: latest_version
+    failed_when: false
+    changed_when: false
+    when: package_item.version is not defined
+  - include_tasks: validate.yml
+  when: (package_item.pkg_manager is not defined and (ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Debian")) or (package_item.pkg_manager is defined and package_item.pkg_manager == "apt")
+
+# Similar functionality as above only the tasks are executed if the
+# OS is Rhel or CentOS or if the `pkg_manager` is `yum`
+- block:
+  - name: get installed {{ package }} version
+    shell: "yum list installed | grep '{{ package }} ' | awk '{print $2}'"
+    register: installed_version
+  - name: get desired version
+    shell: yum list {{ package }} --showduplicates | sort -r | awk '{ print $2; }' | grep {{ package_item.version }}
+    register: available_version_result
+    failed_when: false
+    changed_when: false
+    when: package_item.version is defined
+  - name: get latest version of {{ package }}
+    shell: yum list {{ package }} --showduplicates | sort -r | awk '{ print $2; }' | head -1
+    register: latest_version
+    failed_when: false
+    changed_when: false
+    when: package_item.version is not defined
+  - include_tasks: validate.yml
+  when: (package_item.pkg_manager is not defined and (ansible_facts['distribution'] == "Redhat" or ansible_facts['distribution'] == "CentOS")) or (package_item.pkg_manager is defined and package_item.pkg_manager == "yum")
+
+# Fails if the unable to get version matching from the version specified
+# Or if the OS is not one of Ubuntu or Debian or Rhel or CentOS
+# or if `pkg_manager` is not specified
+- name: "fail if unable to get version for {{ package }} on the given OS"
+  fail:
+    msg: "Unable to get package version matching for {{ ansible_facts.distribution }} OS"
+  when: install_version is not defined or install_version == ""
+
+# If the installed version and the desired version match
+# Sets the variable so the package installation is skipped
+- name: store installed {{ service }} version result
+  set_fact:
+    desired_version_installed: true
+  when: install_version is defined and install_version != "" and already_installed_version == install_version
+
+# Block install package if the version doesn't exists
+- block:
+  - name: "Installing {{ package }} package of {{ install_version }} version"
+    become: true
+    package:
+      name: "{{ package }}={{ install_version }}"
+      state: present
+      force: "{{ package_item.allow_downgrade | default(false) }}"
+      update_cache: yes
+    register: install
+    retries: 5
+    until: install is success
+  - name: install status
+    vars:
+      set_cr_status: true
+    debug:
+      msg: "Installation of {{ package }} {{ install_version }} successful!, check 'Installing' task for more info! If the stderr in 'Installing' task is 'W: --force-yes is deprecated, use one of the options starting with --allow instead.\n', please ignore. It is related to this issue, https://github.com/ansible/ansible/issues/29451"
+    when: install.changed
+
+  # restarts service if flag is true
+  - name: restart service {{ service }}
+    become: true
+    systemd:
+      state: restarted
+      daemon_reload: yes
+      name: "{{ service }}"
+    when: service != "" and install.changed and {{ restart }}
+  # doesn't restarts service if flag is false
+  - name: no service restart {{ service }}
+    debug:
+      msg: "Service not restarted as restart is set to false!"
+    when: service != "" and install.changed and {{ restart }} == false
+
+  # restarts fails if service is not set but restart flag is true
+  - name: restart service failed
+    vars:
+      set_cr_status: true
+    debug:
+      msg: "Unable to restart service, service_name unknown!!"
+    when: service == "" and install.changed and {{ restart }}
+  when: desired_version_installed == false
+
+# Skip installation if desired version and current version matches
+- name: Not installing or upgrading or downgrading
+  vars:
+    set_cr_status: true
+  debug:
+    msg: "Current version and specified version matches, so not upgrading or downgrading"
+  when: desired_version_installed
+

@@ -30,6 +30,7 @@
         - ./tools/deployment/50_test_hostconfig_cr.sh
         - ./tools/deployment/51_test_hostconfig_cr_reconcile.sh
         - ./tools/deployment/52_test_hostconfig_cr_failure.sh
+        - ./tools/deployment/53_test_packges.sh
     voting: false
 
 - job:

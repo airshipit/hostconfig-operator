@@ -41,6 +41,9 @@ on the nodes.
 * We have also added an anisble role to execute the
 "kubeadm alpha cert check-expiration" command and annotate the nodes
 with expiration detail.
+* Added support to upgrade packages and restart the corresponding services
+Current implementation supports installing/upgrading docker, containerd and apache2.
+It also supports installing python3-openstackclient and python3-novaclient binaries.
 
 ## Architecture
 

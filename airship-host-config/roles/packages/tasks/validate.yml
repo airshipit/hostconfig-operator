@@ -1,0 +1,35 @@
+---
+# Fails if there are multiple matches for given version
+- name: check multiple match
+  fail:
+    msg:
+      - "match multiple versions: {{ available_version_result.stdout_lines | join(', ') }}"
+  when: package_item.version is defined and available_version_result.stdout_lines | length > 1
+
+# Fails if no match for given version
+- name: check no match
+  fail: msg="no version match for {{ package }}"
+  when: package_item.version is defined and available_version_result.stdout_lines | length == 0
+
+# Fails if no version exists for the package
+- name: check no match for latest version
+  fail: msg="no version match for {{ package }}"
+  when: package_item.version is not defined and (latest_version.stdout is not defined or latest_version.stdout == "")
+
+# stores the desired version
+- name: store founded version
+  set_fact:
+    install_version: "{{ available_version_result.stdout }}"
+  when: package_item.version is defined and available_version_result.stdout is defined
+
+# stores the desired version
+- name: store latest version
+  set_fact:
+    install_version: "{{ latest_version.stdout }}"
+  when: package_item.version is not defined and latest_version.stdout is defined
+
+# stores current version that exists on the system
+- name: store already installed version
+  set_fact:
+    already_installed_version: "{{ installed_version.stdout }}"
+  when: installed_version.stdout is defined

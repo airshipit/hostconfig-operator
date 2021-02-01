@@ -1,0 +1,18 @@
+# This example can be used to upgrade docker
+# We are upgrading docker on "hostconfig-worker2"
+# in this example
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example-docker
+spec:
+  host_groups:
+   - name: "kubernetes.io/hostname"
+     values:
+      - "hostconfig-worker2"
+  config:
+    packages:
+      - name: docker
+        version: "19.03.10"
+        allow_downgrade: true

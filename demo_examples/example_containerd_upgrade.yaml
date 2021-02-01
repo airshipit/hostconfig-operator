@@ -1,0 +1,18 @@
+# This example can be used to upgrade containerd
+# on kubernetes hosts, here we are doing it on
+# "hostconfig-worker2" node.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example-containerd
+spec:
+  host_groups:
+   - name: "kubernetes.io/hostname"
+     values:
+      - "hostconfig-worker2"
+  config:
+    packages:
+      - name: containerd
+        version: "1.3.9"
+        allow_downgrade: true

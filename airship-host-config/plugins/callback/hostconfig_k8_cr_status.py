@@ -47,7 +47,7 @@ class CallbackModule(CallbackBase):
         self.skip_status_tasks = [
                 "debug", "k8s_status",
                 "local_action", "set_fact", "k8s_info",
-                "lineinfile", "include_role", "file", "fail"
+                "lineinfile", "include_role", "file"
                 ]
 
     # Intializing the variable manager and host variables
@@ -82,8 +82,6 @@ class CallbackModule(CallbackBase):
     # This function is triggered when a certain task fails with
     # failed state in ansible v2 version
     def v2_runner_on_failed(self, result, ignore_errors=False):
-        if result._task_fields["action"] == "fail":
-            return
         self.set_host_config_status(result, True, False)
         return
 
@@ -136,9 +134,13 @@ class CallbackModule(CallbackBase):
                     "stdout", "stderr", "msg",
                     "module_stdout", "module_stderr", "item"
                     ]
-            for res in task_result['results']:
+            for i in range(len(task_result['results'])):
+                res = task_result['results'][i]
                 stat = dict()
                 stat[task_name] = dict()
+                key = result._task.get_vars()['item']['key']
+                value = result._task.get_vars()['item']['value'][i]
+                stat[task_name][key] = value
                 for key in check_keys_res:
                     if key in res.keys() and res[key]:
                         stat[task_name][key] = res[key]
@@ -180,13 +182,15 @@ class CallbackModule(CallbackBase):
             parent_task = result._task.get_first_parent_include().name
             for i in range(len(self.host_config_status[k8_hostname][parent_task]['results'])):
                 res = self.host_config_status[k8_hostname][parent_task]['results'][i]
-                if len(res) == 0:
-                    self.host_config_status[k8_hostname][parent_task]['results'][i].append(status)
-                    break
-                task_names = list()
+                task_details = dict()
+                key = result._task.get_vars()['item']['key']
                 for j in range(len(res)):
-                    task_names.append(list(res[j].keys())[0])
-                if task_name not in task_names:
+                    resitem = res[j]
+                    for k, v in resitem.items():
+                        if k == parent_task:
+                            task_details = resitem[parent_task][key]
+                value = result._task.get_vars()['_ansible_item_label']
+                if task_details == value:
                     self.host_config_status[k8_hostname][parent_task]['results'][i].append(status)
                     break
             if status[task_name]['status'] != "Successful":

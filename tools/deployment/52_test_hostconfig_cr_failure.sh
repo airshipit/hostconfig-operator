@@ -58,16 +58,16 @@ sudo docker exec hostconfig-control-plane3 rm -rf /etc/sudoers.d/hostconfig
 
 # Executing the stop_on_failure example
 kubectl apply -f $AIRSHIP_HOSTCONFIG/demo_examples/example_stop_on_failure.yaml
-check_status example6 '[ "hostconfig-control-plane", "hostconfig-control-plane2" ]' 1
+check_status example6 '[ "hostconfig-control-plane", "hostconfig-control-plane2", "hostconfig-control-plane3" ]' 1
 
 # Executing the max failure nodes example
 kubectl apply -f $AIRSHIP_HOSTCONFIG/demo_examples/example_max_percentage.yaml
-check_status example5 '[ "hostconfig-control-plane", "hostconfig-control-plane2" ]' 1
+check_status example5 '[ "hostconfig-control-plane", "hostconfig-control-plane2", "hostconfig-control-plane3" ]' 1
 kubectl delete -f $AIRSHIP_HOSTCONFIG/demo_examples/example_max_percentage.yaml
 
 # Failing more master nodes
 sudo docker exec hostconfig-control-plane2 rm -rf /etc/sudoers.d/hostconfig
 
 kubectl apply -f $AIRSHIP_HOSTCONFIG/demo_examples/example_max_percentage.yaml
-check_status example5 '[ "hostconfig-control-plane" ]' 2
+check_status example5 '[ "hostconfig-control-plane", "hostconfig-control-plane2", "hostconfig-control-plane3" ]' 2
 kubectl delete -f $AIRSHIP_HOSTCONFIG/demo_examples/example_max_percentage.yaml
