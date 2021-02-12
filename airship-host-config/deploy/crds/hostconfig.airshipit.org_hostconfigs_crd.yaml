@@ -74,6 +74,20 @@ spec:
               type: object
               description: "The configuration details that needs to be performed on the targeted kubernetes nodes."
               properties:
+                exec:
+                  description: "An array of script configuration that would be executed on the target nodes"
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      args:
+                        type: string
+                      environment:
+                        type: object
+                    required:
+                      - name
                 ulimit:
                   description: "An array of ulimit configuration to be performed on the target nodes."
                   type: array

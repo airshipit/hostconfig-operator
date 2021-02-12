@@ -138,25 +138,28 @@ class CallbackModule(CallbackBase):
                     ]
             for res in task_result['results']:
                 stat = dict()
+                stat[task_name] = dict()
                 for key in check_keys_res:
                     if key in res.keys() and res[key]:
-                        stat[key] = res[key]
+                        stat[task_name][key] = res[key]
                 if 'failed' in res.keys() and res['failed']:
-                    stat['status'] = "Failed"
+                    stat[task_name]['status'] = "Failed"
                 elif 'unreachable' in res.keys() and res['unreachable']:
-                    stat['status'] = "Unreachable"
+                    stat[task_name]['status'] = "Unreachable"
                 else:
-                    stat['status'] = "Successful"
+                    stat[task_name]['status'] = "Successful"
                 if "vars" in result._task_fields.keys() and \
                         "cr_status_vars" in \
                         result._task_fields["vars"].keys():
                     for var in result._task_fields["vars"]["cr_status_vars"]:
                         if var in res.keys():
-                            stat[var] = res[var]
+                            stat[task_name][var] = res[var]
                         if "ansible_facts" in res.keys() and \
                                 var in res["ansible_facts"].keys():
-                            stat[var] = res["ansible_facts"][var]
-                status[task_name]['results'].append(stat)
+                            stat[task_name][var] = res["ansible_facts"][var]
+                stat_list = list()
+                stat_list.append(stat)
+                status[task_name]['results'].append(stat_list)
         if failed:
             status[task_name]['status'] = "Failed"
         elif unreachable:
@@ -171,7 +174,26 @@ class CallbackModule(CallbackBase):
                 if "ansible_facts" in task_result.keys() and \
                         var in task_result["ansible_facts"].keys():
                     status[var] = task_result["ansible_facts"][var]
-        self.host_config_status[k8_hostname].update(status)
+        if result._task.get_first_parent_include() and \
+                result._task.get_first_parent_include().name in \
+                self.host_config_status[k8_hostname].keys():
+            parent_task = result._task.get_first_parent_include().name
+            for i in range(len(self.host_config_status[k8_hostname][parent_task]['results'])):
+                res = self.host_config_status[k8_hostname][parent_task]['results'][i]
+                if len(res) == 0:
+                    self.host_config_status[k8_hostname][parent_task]['results'][i].append(status)
+                    break
+                task_names = list()
+                for j in range(len(res)):
+                    task_names.append(list(res[j].keys())[0])
+                if task_name not in task_names:
+                    self.host_config_status[k8_hostname][parent_task]['results'][i].append(status)
+                    break
+            if status[task_name]['status'] != "Successful":
+                self.host_config_status[k8_hostname][parent_task]['status'] = \
+                        status[task_name]['status']
+        else:
+            self.host_config_status[k8_hostname].update(status)
         self._display.display(str(status))
         return
 

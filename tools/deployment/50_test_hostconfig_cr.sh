@@ -44,7 +44,7 @@ check_status(){
                         hosts=( "${@:2:$1}" ); shift "$(( $1 + 1 ))"
                         pre_host_date=""
                         for j in "${!hosts[@]}"; do
-                            kubectl_stdout=$(kubectl get hostconfig $hostconfig -o "jsonpath={.status.hostConfigStatus.${hosts[j]}.Execute\ shell\ command\ on\ nodes.results[0].stdout}" | head -1)
+                            kubectl_stdout=$(kubectl get hostconfig $hostconfig -o "jsonpath={.status.hostConfigStatus.${hosts[j]}.Execute\ shell\ command\ on\ nodes.results[0][0].Execute\ shell\ command\ on\ nodes.stdout}" | head -1)
                             echo $kubectl_stdout
                             host_date=$(date --date="$kubectl_stdout" +"%s")
                             if [ ! -z "$pre_host_date" ]; then

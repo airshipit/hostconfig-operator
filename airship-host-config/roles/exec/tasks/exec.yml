@@ -1,0 +1,14 @@
+- block:
+  - name: copy script
+    copy:
+      src: /opt/ansible/scripts/{{ exec_item.name }}
+      dest: ~/.
+      mode: '0755'
+  - name: exec script command
+    command: "~/{{ exec_item.name }} {{ exec_item.args | default('') }}"
+    environment: "{{ exec_item.environment | default('') }}"
+  always:
+  - name: delete the file
+    file:
+      state: absent
+      path: "~/{{ exec_item.name }}"

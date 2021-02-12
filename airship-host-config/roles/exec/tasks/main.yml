@@ -1,0 +1,5 @@
+- name: loop over each exec
+  include_tasks: exec.yml
+  with_items: "{{ config.exec }}"
+  loop_control:
+    loop_var: exec_item

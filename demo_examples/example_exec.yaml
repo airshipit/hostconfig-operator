@@ -1,0 +1,19 @@
+# In this example we are executing sample script
+# on kubernetes host using exec config.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example-exec
+spec:
+  host_groups:
+   - name: "kubernetes.io/hostname"
+     values:
+      - "hostconfig-worker"
+  config:
+    exec:
+      - name: example.sh
+        args: "test1 test2"
+        environment:
+          test: "testing"
+          env1: "hello"
