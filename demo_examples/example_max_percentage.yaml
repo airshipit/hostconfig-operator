@@ -15,7 +15,7 @@ spec:
   stop_on_failure: false
   max_failure_percentage: 30
   config:
-    shell:
-      - command: "date;hostname"
+    exec:
+      - name: test.sh
     kubeadm:
       - command: "alpha certs check-expiration"

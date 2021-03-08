@@ -14,5 +14,5 @@ spec:
       - "worker"
   sequential: true
   config:
-    shell:
-      - command: "date;hostname;sleep 5"
+    exec:
+      - name: test.sh

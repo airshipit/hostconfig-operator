@@ -34,8 +34,9 @@ in the host-groups of the CR object
 * Reconcile on failed nodes, based on reconcile period - feature available
 from ansible-operator
 * Current support is available to perform `sysctl` and `ulimit` operations
-on the kubernetes nodes. Also any shell command that needs to be executed
-on the nodes.
+on the kubernetes nodes.
+* Any shell command that needs to be executed on the nodes can use the `exec`
+config option.
 * Display the status of each Hostconfig CR object as part of the
 `kubectl describe hostconfig <name>`
 * We have also added an anisble role to execute the

@@ -25,5 +25,5 @@ spec:
   sequential: false
   match_host_groups: true
   config:
-    shell:
-      - command: "date;hostname"
+    exec:
+    - name: test.sh

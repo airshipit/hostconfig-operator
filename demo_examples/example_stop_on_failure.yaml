@@ -14,7 +14,7 @@ spec:
       - "master"
   stop_on_failure: true
   config:
-    shell:
-      - command: "date;hostname"
+    exec:
+      - name: test.sh
     kubeadm:
       - command: "alpha certs check-expiration"

@@ -14,5 +14,5 @@ spec:
       - "worker"
   max_hosts_parallel: 2
   config:
-    shell:
-      - command: "date;hostname;sleep 5"
+    exec:
+    - name: test.sh

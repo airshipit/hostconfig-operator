@@ -63,7 +63,6 @@ class KubeInventory(object):
                 secret_value = self.api_instance.read_namespaced_secret(
                         labels["secret"], namespace)
             except ApiException as e:
-                print("Exception when calling Secret: %s\n" % e)
                 return False
             if "username" in secret_value.data.keys():
                 username = (base64.b64decode(
@@ -127,7 +126,7 @@ class KubeInventory(object):
                 "items"
             ]
         except ApiException as e:
-            print("Exception when calling CoreV1Api->list_node: %s\n" % e)
+            return False
 
         for node in nodes:
             addresses = node["status"]["addresses"]

@@ -15,7 +15,7 @@ spec:
      values:
       - "master"
   config:
-    shell:
-      - command: "date;hostname"
+    exec:
+      - name: test.sh
     kubeadm:
       - command: "alpha certs check-expiration"

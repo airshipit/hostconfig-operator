@@ -193,8 +193,11 @@ Config Roles:
 ulimit, sysctl: Array objects specifiying the configuration of
 ulimit and sysctl on the kubernetes nodes.
 
-kubeadm, shell: Array objects specifiying the kubeadm and shell
-commands that world be executed on the kubernetes nodes.
+kubeadm: Array object specifiying the kubeadm commands that would
+be executed on the kubernetes nodes.
+
+exec: Array object specifying list of scripts along with arguments
+and environment variables that can be executed on the nodes.
 
 The demo_examples folder has some examples listed which can be
 used to initially to play with the above variables
