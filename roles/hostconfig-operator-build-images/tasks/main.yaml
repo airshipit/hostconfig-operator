@@ -14,8 +14,16 @@
   make:
     chdir: "{{ zuul.project.src_dir }}"
     target: images
+    params:
+      DOCKER_REGISTRY: "{{ image_repo }}"
+      DOCKER_IMAGE_PREFIX: "{{ docker_image_prefix }}"
+      USE_PROXY: "{{ proxy.enabled | lower }}"
+      HTTP_PROXY: "{{ proxy.http }}"
+      HTTPS_PROXY: "{{ proxy.https }}"
+      DOCKER_IMAGE_TAG: "{{ zuul.change | default('latest') }}"
+      NO_PROXY: "{{ proxy.noproxy }}"
 
 - name: Verify Image Exists
-  shell: docker image inspect "$(make print-docker-image-tag)"
+  shell: docker image inspect "$(make DOCKER_REGISTRY={{ image_repo }} DOCKER_IMAGE_PREFIX={{ docker_image_prefix }} DOCKER_IMAGE_TAG={{ zuul.change | default('latest') }} print-docker-image-tag)"
   args:
     chdir: "{{ zuul.project.src_dir }}"

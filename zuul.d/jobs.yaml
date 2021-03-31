@@ -53,9 +53,6 @@
       - name: hostconfig_operator_image_repo_credentials
         secret: hostconfig_operator_image_repo_credentials
         pass-to-parent: true
-    vars:
-      image: quay.io/airshipit/hostconfig-operator
-      image_repo: quay.io
 
 - job:
     name: airship-hostconfig-operator-upload-git-mirror

@@ -13,5 +13,5 @@
 - hosts: all
   become: yes
   roles:
-    - role: ensure-docker
+    - role: docker-install
     - hostconfig-operator-build-images

@@ -11,6 +11,15 @@
 # limitations under the License.
 
 - project:
+    vars:
+      proxy:
+        enabled: false
+        http: ""
+        https: ""
+        noproxy: ""
+      image_repo: quay.io
+      docker_image_prefix: airshipit
+
     check:
       jobs:
         - airship-hostconfig-operator-test

@@ -13,5 +13,5 @@
 - hosts: all
   become: yes
   roles:
-    - ensure-docker
+    - docker-install
     - hostconfig-operator-publish-images
