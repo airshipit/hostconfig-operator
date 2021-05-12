@@ -1,0 +1,19 @@
+# In this example we are executing sample ethtool
+# script on kubernetes host using exec config.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example-exec-ethtool
+spec:
+  host_groups:
+   - name: "kubernetes.io/role"
+     values:
+      - "master"
+      - "worker"
+  config:
+    exec:
+      - name: ethtool.sh
+        args: "-h"
+      - name: ethtool.sh
+        args: "--version"

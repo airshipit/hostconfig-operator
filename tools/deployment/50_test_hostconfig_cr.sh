@@ -127,3 +127,7 @@ check_status example7 '[ "hostconfig-control-plane", "hostconfig-control-plane2"
 # Executing sample sysctl and ulimit configuration on the kubernetes nodes
 kubectl apply -f $AIRSHIP_HOSTCONFIG/demo_examples/example_sysctl_ulimit.yaml
 check_status example8 '[ "hostconfig-control-plane", "hostconfig-control-plane2", "hostconfig-control-plane3" ]' false
+
+# Executing sample ethtool commands on the kubernetes nodes
+kubectl apply -f $AIRSHIP_HOSTCONFIG/demo_examples/example_ethtool.yaml
+check_status example-exec-ethtool '[ "hostconfig-control-plane", "hostconfig-control-plane2", "hostconfig-control-plane3", "hostconfig-worker", "hostconfig-worker2" ]' false
