@@ -25,7 +25,6 @@ cd hostconfig-operator
 ```
 ./tools/deployment/00_install_kind.sh
 ./tools/deployment/01_install_kubectl.sh
-./tools/deployment/02_install_operator_sdk.sh
 ```
 
 3. Create hostconfig kind cluster
