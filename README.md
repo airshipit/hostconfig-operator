@@ -21,10 +21,9 @@ git clone https://opendev.org/airship/hostconfig-operator.git
 cd hostconfig-operator
 ```
 
-2. To install kind, kubectl and operator-sdk utilities
+2. To install docker, kind, kubectl and necessary utilities
 ```
-./tools/deployment/00_install_kind.sh
-./tools/deployment/01_install_kubectl.sh
+./tools/deployment/00_install_prerequsite.sh
 ```
 
 3. Create hostconfig kind cluster

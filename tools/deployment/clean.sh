@@ -15,4 +15,4 @@ set -xe
 
 kind delete cluster --name hostconfig
 sudo docker rmi -f $(sudo docker images --all -q | xargs -I{} sudo bash -c 'if docker image inspect {} | grep -q kind; then echo {} ; fi')
-rm -rf ssh
+rm -rf ssh ~/.ansible.cfg
