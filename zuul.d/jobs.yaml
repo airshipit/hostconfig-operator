@@ -39,9 +39,6 @@
     run: playbooks/airship-hostconfig-operator-build-images.yaml
     post-run:
       - playbooks/airship-collect-logs.yaml
-    irrelevant-files:
-      - ^.*\.md$
-      - ^docs/.*$
 
 - job:
     name: airship-hostconfig-operator-publish-image
