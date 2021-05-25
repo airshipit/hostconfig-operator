@@ -74,6 +74,21 @@ spec:
               type: object
               description: "The configuration details that needs to be performed on the targeted kubernetes nodes."
               properties:
+                apparmor:
+                  description: "An array of apparmor configuration to be performed on the target nodes."
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                      profile:
+                        type: string
+                      state:
+                        type: string
+                    required:
+                      - filename
+                      - state
                 exec:
                   description: "An array of script configuration that would be executed on the target nodes"
                   type: array

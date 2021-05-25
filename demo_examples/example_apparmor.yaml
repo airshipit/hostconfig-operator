@@ -1,0 +1,25 @@
+# This CR when executed configures the passed sysctl and ulimit
+# configuration on the kubernetes master nodes.
+
+apiVersion: hostconfig.airshipit.org/v1alpha1
+kind: HostConfig
+metadata:
+  name: example-apparmor
+spec:
+  host_groups:
+   - name: "kubernetes.io/hostname"
+     values:
+      - "hostconfig-control-plane"
+  config:
+   apparmor:
+     - filename: bin.example.sh
+       profile: |
+         #include <tunables/global>
+         #
+         /bin/example.sh {
+           #include <abstractions/base>
+           #
+           /bin/example.sh r,
+           deny /tmp/sample.txt w,
+         }
+       state: present

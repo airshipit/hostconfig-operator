@@ -45,6 +45,7 @@ with expiration detail.
 * Added support to upgrade packages and restart the corresponding services
 Current implementation supports installing/upgrading docker, containerd and apache2.
 It also supports installing python3-openstackclient and python3-novaclient binaries.
+* Added support to apply custom apparmor profiles to kubernetes nodes
 
 ## Architecture
 

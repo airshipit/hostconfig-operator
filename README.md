@@ -197,6 +197,9 @@ be executed on the kubernetes nodes.
 exec: Array object specifying list of scripts along with arguments
 and environment variables that can be executed on the nodes.
 
+apparmor: Array object specifying the apparmor profile that need to be
+applied on kubernetes nodes.
+
 The demo_examples folder has some examples listed which can be
 used to initially to play with the above variables
 
