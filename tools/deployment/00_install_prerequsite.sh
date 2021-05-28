@@ -33,7 +33,10 @@ pkg_check() {
   done
 }
 
-pkg_check curl wget python3-pip python3-setuptools ca-certificates make
+pkg_check curl wget ca-certificates make
+
+echo "Installing pip and dependencies"
+curl -s https://bootstrap.pypa.io/get-pip.py | python3
 
 echo "Installing Kind Version $KIND_VERSION"
 sudo wget -O /usr/local/bin/kind ${KIND_URL}
@@ -51,9 +54,9 @@ envsubst <"${HCO_WS}/tools/deployment/config_template.yaml" > "$PLAYBOOK_CONFIG"
 
 PACKAGES="ansible netaddr"
 if [[ -z "${http_proxy}" ]]; then
-  sudo pip3 install $PACKAGES
+  sudo python3 -m pip install $PACKAGES
 else
-  sudo pip3 --proxy "${http_proxy}" install $PACKAGES
+  sudo python3 -m pip --proxy "${http_proxy}" install $PACKAGES
 fi
 
 echo "primary ansible_host=localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3" > "$ANSIBLE_HOSTS"

@@ -12,7 +12,7 @@
 
 ---
 local_src_dir: "$HCO_WS"
-ansible_user: root
+ansible_user: "$USER"
 proxy:
  enabled: "$USE_PROXY"
  http: "$HTTP_PROXY"

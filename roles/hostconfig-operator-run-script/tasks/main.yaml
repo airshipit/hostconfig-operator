@@ -19,3 +19,7 @@
   environment:
     remote_work_dir: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}"
     zuul_site_mirror_fqdn: "{{ zuul_site_mirror_fqdn }}"
+
+- name: Reset ssh connection for docker group to reload
+  meta: reset_connection
+  ignore_errors: true
