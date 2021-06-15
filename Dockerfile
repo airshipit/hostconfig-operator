@@ -8,9 +8,14 @@ RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
 
 # Installing ssh clients - used to connect to kubernetes nodes
 USER root
-RUN dnf install openssh-clients -y
-RUN rpm -ivh https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/epel-release-6-8.noarch.rpm \
-     && dnf -y install sshpass
+RUN rpm -ivh https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/epel-release-6-8.noarch.rpm
+RUN dnf install dbus libnghttp2 python3-librepo dbus-libs librepo dbus-daemon \
+     gnutls dbus-common dbus-tools systemd python3-libxml2 cryptsetup-libs libssh \
+     libarchive cyrus-sasl-lib curl openssl-libs platform-python glibc systemd-pam \
+     platform-python-pip python3-pip libcom_err gnupg2 vim-minimal libstdc++ \
+     python3-libs systemd-libs libssh-config glib2 python3-pip-wheel libsolv \
+     gdb-gdbserver sqlite-libs libgcrypt libgcc pcre2 glibc-common expat libxml2 \
+     libcurl glibc-minimal-langpack libpcap openssh-clients sshpass -y
 USER ansible-operator
 
 # Configuration for ansible
