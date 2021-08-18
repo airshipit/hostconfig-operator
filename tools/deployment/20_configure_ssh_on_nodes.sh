@@ -36,6 +36,6 @@ do
     printf 'Working on host %s with Indexs and having IP %s\n' "${hosts[i]}" "$i" "${hosts_ips[i]}"
     ssh-keygen -q -t rsa -N '' -f ssh/${hosts[i]}
     sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ssh/${hosts[i]} $USERNAME@${hosts_ips[i]}
-    kubectl create secret generic ${hosts[i]} --from-literal=username=$USERNAME --from-file=ssh_private_key=ssh/${hosts[i]}
+    kubectl create secret generic ${hosts[i]} --from-literal=username=$USERNAME --from-file=ssh-privatekey=ssh/${hosts[i]}
     kubectl annotate node ${hosts[i]} secret=${hosts[i]}
 done

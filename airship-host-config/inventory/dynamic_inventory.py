@@ -68,7 +68,7 @@ class KubeInventory(object):
                 username = (base64.b64decode(
                     secret_value.data['username'])).decode("utf-8")
                 self.inventory["_meta"]["hostvars"]\
-                        [node_internalip]["ansible_ssh_user"] = username
+                        [node_internalip]["ansible_ssh_user"] = username.strip()
             elif "USER" in os.environ:
                 self.inventory["_meta"]["hostvars"][node_internalip]\
                         ["ansible_ssh_user"] = os.environ.get("USER")
@@ -80,9 +80,9 @@ class KubeInventory(object):
                     secret_value.data['password'])).decode("utf-8")
                 self.inventory["_meta"]["hostvars"]\
                         [node_internalip]["ansible_ssh_pass"] = password
-            elif "ssh_private_key" in secret_value.data.keys():
+            elif "ssh-privatekey" in secret_value.data.keys():
                 private_key = (base64.b64decode(
-                    secret_value.data['ssh_private_key'])).decode("utf-8")
+                    secret_value.data['ssh-privatekey'])).decode("utf-8")
                 fileName = "/opt/ansible/.ssh/"+node_name
                 with open(os.open(
                         fileName, os.O_CREAT | os.O_WRONLY, 0o644), 'w') as f:

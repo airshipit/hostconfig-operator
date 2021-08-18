@@ -105,7 +105,7 @@ ssh-keygen -q -t rsa -N '' -f <key_file_name>
 ssh-copy-id -i <key_file_name> <username>@<node_ip>
 kubectl create secret generic <secret_name> \
 --from-literal=username=<username> \
---from-file=ssh_private_key=<key_file_name>
+--from-file=ssh-privatekey=<key_file_name>
 kubectl annotate node <node_name> secret=<secret_name>
 ```
 

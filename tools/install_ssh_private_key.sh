@@ -11,7 +11,7 @@ if [[ $1 ]] && [[ $2 ]]; then
         printf 'Working on host %s with Index %s and having IP %s\n' "${hosts[i]}" "$i" "${hosts_ips[i]}"
         ssh-keygen -q -t rsa -N '' -f ${hosts[i]}
         sshpass -p $PASSWORD ssh-copy-id -o StrictHostKeyChecking=no -i ${hosts[i]} $USERNAME@${hosts_ips[i]}
-        kubectl create secret generic ${hosts[i]} --from-literal=username=$USERNAME --from-file=ssh_private_key=${hosts[i]}
+        kubectl create secret generic ${hosts[i]} --from-literal=username=$USERNAME --from-file=ssh-privatekey=${hosts[i]}
         kubectl annotate node ${hosts[i]} secret=${hosts[i]}
     done
 else
