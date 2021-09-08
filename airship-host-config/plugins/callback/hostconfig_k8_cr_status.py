@@ -55,8 +55,8 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_play_start(self, play):
         self.vm = play.get_variable_manager()
         self.host_vars = self.vm.get_vars()['hostvars']
-        self.hostConfigName = self.host_vars['localhost']['meta']['name']
-        self.namespace = self.host_vars['localhost']['meta']['namespace']
+        self.hostConfigName = self.host_vars['localhost']['ansible_operator_meta']['name']
+        self.namespace = self.host_vars['localhost']['ansible_operator_meta']['namespace']
 
     # This function is triggered when a certain task fails with
     # unreachable state
@@ -119,7 +119,7 @@ class CallbackModule(CallbackBase):
         if k8_hostname not in self.host_config_status.keys():
             self.host_config_status[k8_hostname] = dict()
         if task_name in self.host_config_status[k8_hostname].keys():
-            status[task_name] = host_config_status[k8_hostname][task_name]
+            status[task_name] = self.host_config_status[k8_hostname][task_name]
         status[task_name] = dict()
         check_keys = ["stdout", "stderr", "msg"]
         for key in check_keys:
@@ -210,7 +210,7 @@ class CallbackModule(CallbackBase):
                 ['_hostconfig_airshipit_org_hostconfig']\
                 ['metadata']['annotations']
         reconcile_status = dict()
-        if "ansible.operator-sdk/reconcile-period" in annotations.keys():
+        if "ansible.sdk.operatorframework.io/reconcile-period" in annotations.keys():
             iterations = 0
             pre_iter = None
             if 'reconcileStatus' in cr_obj['status'].keys() and \
@@ -219,12 +219,12 @@ class CallbackModule(CallbackBase):
                 pre_iter = cr_obj['status']['reconcileStatus']\
                         ['completed_iterations']
             # Checks if the reconcile-interval or period is specified
-            if "ansible.operator-sdk/reconcile-interval" in annotations.keys():
+            if "ansible.sdk.operatorframework.io/reconcile-interval" in annotations.keys():
                 # Calculates the iterations based on the reconcile-interval
                 # This executes for the very first iteration only
                 if pre_iter is None:
-                    interval = annotations["ansible.operator-sdk/reconcile-interval"]
-                    period = annotations["ansible.operator-sdk/reconcile-period"]
+                    interval = annotations["ansible.sdk.operatorframework.io/reconcile-interval"]
+                    period = annotations["ansible.sdk.operatorframework.io/reconcile-period"]
                     iterations = self.get_iterations_from_interval(
                             interval, period)
                     reconcile_status['total_iterations'] = iterations
@@ -244,9 +244,9 @@ class CallbackModule(CallbackBase):
                         "format not specified" in iterations:
                     reconcile_status['msg'] = iterations
                     return reconcile_status
-            elif "ansible.operator-sdk/reconcile-iterations" \
+            elif "ansible.sdk.operatorframework.io/reconcile-iterations" \
                     in annotations.keys():
-                iterations = annotations["ansible.operator-sdk/reconcile-iterations"]
+                iterations = annotations["ansible.sdk.operatorframework.io/reconcile-iterations"]
             else:
                 reconcile_status['msg'] = "Reconcile iterations or interval "+\
                         "not specified. Running simple reconcile."
@@ -271,7 +271,7 @@ class CallbackModule(CallbackBase):
             reconcile_status['completed_iterations'] = current_iter
             if int(current_iter) == int(iterations)-1:
                 cr_obj["metadata"]["annotations"]\
-                        ["ansible.operator-sdk/reconcile-period"] = "0"
+                        ["ansible.sdk.operatorframework.io/reconcile-period"] = "0"
                 self.custom_api_instance.patch_namespaced_custom_object(
                           group="hostconfig.airshipit.org",
                           version="v1alpha1",

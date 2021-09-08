@@ -6,8 +6,8 @@ apiVersion: hostconfig.airshipit.org/v1alpha1
 kind: HostConfig
 metadata:
   annotations:
-    ansible.operator-sdk/reconcile-period: "30s"
-    ansible.operator-sdk/reconcile-interval: "2m40s"
+    ansible.sdk.operatorframework.io/reconcile-period: "30s"
+    ansible.sdk.operatorframework.io/reconcile-interval: "2m40s"
   name: example11
 spec:
   host_groups:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.8
 
 # Python code to build Inventory dynamically based on the kubernetes nodes
 # present in the cluster and labels and annotations associated

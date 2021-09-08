@@ -1,10 +1,10 @@
 # Ansible Operator base image
-FROM quay.io/operator-framework/ansible-operator:v0.17.0
+FROM quay.io/operator-framework/ansible-operator:v1.13.1
 
 # Installing dependency libraries
 COPY airship-host-config/requirements.yml ${HOME}/requirements.yml
 RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
- && chmod -R ug+rwx ${HOME}/.ansible
+    && chmod -R ug+rwx ${HOME}/.ansible
 
 # Installing ssh clients - used to connect to kubernetes nodes
 USER root
@@ -15,8 +15,9 @@ RUN dnf install dbus libnghttp2 python3-librepo dbus-libs librepo dbus-daemon \
      platform-python-pip python3-pip libcom_err gnupg2 vim-minimal libstdc++ \
      python3-libs systemd-libs libssh-config glib2 python3-pip-wheel libsolv \
      gdb-gdbserver sqlite-libs libgcrypt libgcc pcre2 glibc-common expat libxml2 \
-     libcurl glibc-minimal-langpack libpcap openssh-clients sshpass -y
-USER ansible-operator
+     libcurl glibc-minimal-langpack libpcap openssh-clients sshpass -y \
+     && dnf clean all && rm -rf /var/cache/yum
+USER ansible
 
 # Configuration for ansible
 COPY airship-host-config/build/ansible.cfg /etc/ansible/ansible.cfg
@@ -39,7 +40,7 @@ COPY airship-host-config/plugins/ ${HOME}/plugins/
 # ansible-runner unable to pick custom callback plugins specified in any other directory other than /usr/local/lib/python3.6/site-packages/ansible/plugins/callback
 # ansible-runner is overriding the ANSIBLE_CALLBACK_PLUGINS Environment variable
 # https://github.com/ansible/ansible-runner/blob/stable/1.3.x/ansible_runner/runner_config.py#L178
-COPY airship-host-config/plugins/callback/hostconfig_k8_cr_status.py /usr/local/lib/python3.6/site-packages/ansible/plugins/callback/
+COPY airship-host-config/plugins/callback/hostconfig_k8_cr_status.py /usr/local/lib/python3.8/site-packages/ansible/plugins/callback/
 
 # Copying scripts folder used by exec configuration
 COPY airship-host-config/scripts/ ${HOME}/scripts/

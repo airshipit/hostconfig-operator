@@ -33,6 +33,9 @@ spec:
         - name: airship-host-config
           image: "AIRSHIP_HOSTCONFIG_IMAGE"
           imagePullPolicy: "PULL_POLICY"
+          args:
+          - --leader-elect
+          - --leader-election-id=airship-host-config
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
@@ -45,8 +48,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: OPERATOR_NAME
-              value: "airship-host-config"
             - name: ANSIBLE_FILTER_PLUGINS
               value: /opt/ansible/plugins/filter
             - name: ANSIBLE_FORKS
