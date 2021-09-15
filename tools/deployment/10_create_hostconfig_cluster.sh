@@ -21,7 +21,7 @@ REMOTE_WORK_DIR=/tmp
 echo "Create Kind Cluster"
 cat <<EOF >  ${REMOTE_WORK_DIR}/kind-hostconfig.yaml
 kind: Cluster
-apiVersion: kind.sigs.k8s.io/v1alpha3
+apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
   - role: control-plane
   - role: control-plane

@@ -15,7 +15,7 @@
 # This downloads kind, puts it in a temp directory, and prints the directory
 set -xe
 
-export KIND_VERSION=${KIND_VERSION:="v0.8.1"}
+export KIND_VERSION=${KIND_VERSION:="v0.11.1"}
 export KIND_URL=${KIND_URL:="https://kind.sigs.k8s.io/dl/$KIND_VERSION/kind-$(uname)-amd64"}
 export KUBE_VERSION=${KUBE_VERSION:="v1.18.6"}
 export KUBE_URL=${KUBE_URL:="https://storage.googleapis.com"}
